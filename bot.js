@@ -46,14 +46,13 @@ bot.command('schedule', async ctx => {
 
   if (groupId) {
     const data = await databaseService.getData(groupId);
-    
+
     const html = await ejs.renderFile(filename, data);
 
     const image = await nodeHtmlToImage({
       html: html
     });
 
-    await ctx.rep
     await ctx.replyWithPhoto({ source: image }, { caption: group.title});
   } else {
     await ctx.reply('Группа ведена некорректно');

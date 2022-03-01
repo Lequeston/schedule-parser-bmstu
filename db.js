@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const databaseService = require('./service/database.service');
 
 const dbConnect = async () => {
-  mongoose.connect(process.env.DB_URL, {
+  await mongoose.connect(process.env.DB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });
