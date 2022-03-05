@@ -4,7 +4,10 @@ import async from 'async';
 
 import { ParserData, ParserLesson } from './types/parser';
 
-const parse = async (saveData: Function, whiteListGroups?: Array<string>) => {
+const parse = async (
+  saveData: (data: ParserData) => void, 
+  whiteListGroups?: Array<string>
+) => {
   try {
     const siteUrl: string = process.env.SITE_URL || '';
     const data: Array<ParserLesson> = [];
@@ -88,7 +91,7 @@ const parse = async (saveData: Function, whiteListGroups?: Array<string>) => {
         }
 
         const parseTable = (groupTitle: string) => {
-          return (i: number, elem: cheerio.Element) => {
+          return (_: number, elem: cheerio.Element) => {
             const title = $(elem).find('td.bg-grey>strong').text().trim();
             $(elem).find('tr').each(parserDay(groupTitle, title));
           }

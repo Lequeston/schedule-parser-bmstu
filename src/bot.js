@@ -60,4 +60,4 @@ bot.command('schedule', async ctx => {
 });
 
 
-module.exports = bot;
+export default bot;

@@ -4,7 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p ./"
+    "start:dev": "cross-env NODE_ENV=development nodemon --config config/nodemon.json",
+    "build": "cross-env NODE_ENV=production rimraf ./dist && tsc",
+    "start": "npm run build && node dist/index.js",
+    "test": "cross-env NODE_ENV=test jest --config=config/jest.config.js"
   },
   "dependencies": {
     "async": "^3.2.3",
@@ -16,13 +19,16 @@
     "log4js": "^6.4.1",
     "mongoose": "^6.2.3",
     "node-html-to-image": "^3.2.4",
-    "telegraf": "^4.7.0"
+    "telegraf": "^4.7.0",
+    "typeorm": "^0.2.45"
   },
   "devDependencies": {
     "@types/async": "^3.2.12",
     "cross-env": "^7.0.3",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15",
     "rimraf": "^3.0.2",
+    "ts-node": "^10.6.0",
     "typescript": "^4.6.2"
   }
 }
