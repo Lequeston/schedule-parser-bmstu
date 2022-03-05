@@ -1,14 +1,9 @@
-export type ParseTime = {
-  start: number,
-  end: number,
-}
-
 export type ParserLesson = {
   title: string,
   typeLesson: string | null,
   office: string | null,
   teacher: string | null,
-  time: ParseTime,
+  time: string,
   groupTitle: string,
   dayTitle: string,
   weekType: string
@@ -16,7 +11,7 @@ export type ParserLesson = {
 
 export type ParserData = {
   data: Array<ParserLesson>,
-  times: Array<ParseTime>,
+  times: Array<String>,
   teachers: Array<String>,
   weekTypes: Array<String>,
   offices: Array<string>,

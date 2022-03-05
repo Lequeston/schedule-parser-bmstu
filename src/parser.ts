@@ -2,22 +2,25 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import async from 'async';
 
+import { ParserData, ParserLesson } from './types/parser';
+
 const parse = async (saveData: Function, whiteListGroups: undefined | Array<string>) => {
   try {
-    const siteUrl = process.env.SITE_URL;
-    const results = [];
+    const siteUrl: string = process.env.SITE_URL || '';
+    const data: Array<ParserLesson> = [];
 
-    const times = new Set();
-    const teachers = new Set();
-    const weekTypes = new Set();
-    const offices = new Set();
-    const lessonTypes = new Set();
-    const groups = new Set();
-    const dayTitles = new Set();
+    const times = new Set<string>();
+    const teachers = new Set<string>();
+    const weekTypes = new Set<string>();
+    const offices = new Set<string>();
+    const lessonTypes = new Set<string>();
+    const groups = new Set<string>();
+    const dayTitles = new Set<string>();
 
-    const mergingData = () => {
+    //формирует итоговый распарсенный объект
+    const mergingData = (): ParserData => {
       return ({
-        data: results,
+        data,
         times: Array.from(times),
         teachers: Array.from(teachers),
         weekTypes: Array.from(weekTypes),
@@ -25,26 +28,27 @@ const parse = async (saveData: Function, whiteListGroups: undefined | Array<stri
         lessonTypes: Array.from(lessonTypes),
         groups: Array.from(groups),
         dayTitles: Array.from(dayTitles)
-      })
+      });
     }
+
     const parserSchedule = async (url: string, callback: Function) => {
       const res = await axios.get(url);
 
       if (res.status === 200) {
         const $ = cheerio.load(res.data);
 
-        const parseLesson = (elem: cheerio.Element) => {
+        const parseLesson = (elem: cheerio.Cheerio<cheerio.Element>) => {
           const list = $(elem).find('i');
           return $(elem).find('span').text() ? ({
             title: $(elem).find('span').text(),
-            info: list.eq(0).text(),
+            typeLesson: list.eq(0).text(),
             office: list.eq(1).text(),
             teacher: list.eq(2).text()
           }) : null;
         }
 
-        const parserDay = (groupTitle, dayTitle) => {
-          const saveLesson = (time, element, weekType) => {
+        const parserDay = (groupTitle: string, dayTitle: string) => {
+          const saveLesson = (time: string, element: cheerio.Cheerio<cheerio.Element>, weekType: string) => {
             const lesson = parseLesson(element);
 
             times.add(time);
@@ -53,11 +57,11 @@ const parse = async (saveData: Function, whiteListGroups: undefined | Array<stri
             dayTitles.add(dayTitle);
 
             if (lesson) {
-              lesson.info && lessonTypes.add(lesson.info);
+              lesson.typeLesson && lessonTypes.add(lesson.typeLesson);
               lesson.office && offices.add(lesson.office);
               lesson.teacher && teachers.add(lesson.teacher);
 
-              results.push({
+              data.push({
                 ...lesson,
                 time,
                 groupTitle,
@@ -66,7 +70,7 @@ const parse = async (saveData: Function, whiteListGroups: undefined | Array<stri
               });
             }
           }
-          return (i, elem) => {
+          return (i: number, elem: cheerio.Element) => {
             if (i > 1) {
               const time = $(elem).find('td.bg-grey.text-nowrap').text();
               if ($(elem).find('td[colspan="2"]').length === 1) {
@@ -83,8 +87,8 @@ const parse = async (saveData: Function, whiteListGroups: undefined | Array<stri
           }
         }
 
-        const parseTable = (groupTitle) => {
-          return (i, elem) => {
+        const parseTable = (groupTitle: string) => {
+          return (i: number, elem: cheerio.Element) => {
             const title = $(elem).find('td.bg-grey>strong').text().trim();
             $(elem).find('tr').each(parserDay(groupTitle, title));
           }
@@ -98,7 +102,7 @@ const parse = async (saveData: Function, whiteListGroups: undefined | Array<stri
         $('div.panel-body div.btn-group>a').each((i, elem) => {
           const title = $(elem).text().trim();
           if (!whiteListGroups || whiteListGroups.includes(title)) {
-            const url = new URL($(elem).attr('href'), siteUrl);
+            const url = new URL($(elem).attr('href') || '', siteUrl);
             q.push(url.href);
           }
         });
