@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "build": "tsc -p ./"
   },
   "dependencies": {
     "async": "^3.2.3",
@@ -21,6 +21,7 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "nodemon": "^2.0.15",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "typescript": "^4.6.2"
   }
 }

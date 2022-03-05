@@ -1,4 +1,5 @@
-require('dotenv').config();
+
+import 'dotenv/config';
 
 const bot = require('./bot.js');
 const { saveParseData } = require('./db.js');
