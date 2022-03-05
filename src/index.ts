@@ -3,7 +3,7 @@ import 'dotenv/config';
 
 const bot = require('./bot.js');
 const { saveParseData } = require('./db.js');
-const parse = require('./parser.js');
+import parse from './parser';
 
 
 const start = async () => {
