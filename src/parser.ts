@@ -1,9 +1,8 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
-const async = require('async');
-const fs = require('fs');
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import async from 'async';
 
-const parse = async (saveData, whiteListGroups) => {
+const parse = async (saveData: Function, whiteListGroups: undefined | Array<string>) => {
   try {
     const siteUrl = process.env.SITE_URL;
     const results = [];
@@ -28,13 +27,13 @@ const parse = async (saveData, whiteListGroups) => {
         dayTitles: Array.from(dayTitles)
       })
     }
-    const parserSchedule = async (url, callback) => {
+    const parserSchedule = async (url: string, callback: Function) => {
       const res = await axios.get(url);
 
       if (res.status === 200) {
         const $ = cheerio.load(res.data);
 
-        const parseLesson = (elem) => {
+        const parseLesson = (elem: cheerio.Element) => {
           const list = $(elem).find('i');
           return $(elem).find('span').text() ? ({
             title: $(elem).find('span').text(),
