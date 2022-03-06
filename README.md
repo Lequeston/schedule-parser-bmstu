@@ -40,4 +40,6 @@ BOT_TOKEN=
 DB_URL=
 # URL от сайта с расписанием
 SITE_URL=https://lks.bmstu.ru/schedule/list
+# Начать парсинг данных при запуске приложения? (true, false)
+IS_PARSING=true
 ```
