@@ -1,8 +1,8 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const TimeSchema = new Schema({
   to: {type: Number, unique: true, required: true},
   from: {type: Number, unique: true, required: true}
 });
 
-module.exports = model('Time', TimeSchema);
+export default model('Time', TimeSchema);

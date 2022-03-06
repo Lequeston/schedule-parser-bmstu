@@ -1,16 +1,20 @@
-const { Telegraf } = require('telegraf');
-const ejs = require('ejs');
-const path = require('path');
-const nodeHtmlToImage = require('node-html-to-image')
+import { Telegraf } from 'telegraf';
+import ejs from 'ejs';
+import path from 'path';
+import nodeHtmlToImage from 'node-html-to-image';
+import fs from 'fs';
 
-const logger = require('./config/logger');
-const { dbConnect, dbDisconnect } = require('./db');
+import logger from './config/logger';
+import { dbConnect, dbDisconnect } from './db';
 
-const groupService = require('./service/group.service');
-const userService = require('./service/user.service');
-const databaseService = require('./service/database.service');
+// @ts-ignore
+import groupService from './service/group.service.js';
+// @ts-ignore
+import userService from './service/user.service.js';
+// @ts-ignore
+import databaseService from './service/database.service.js';
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
 bot.use(async (ctx, next) => {
   await dbConnect();
@@ -23,11 +27,11 @@ bot.start((ctx) => {
 });
 
 bot.command('group', async ctx => {
-  const text = ctx
+  const wordArray = ctx
     .message
     .text
-    .split(' ')[1]
-    .toUpperCase();
+    .split(' ');
+  const text = wordArray && wordArray[1] && wordArray[1].toUpperCase();
   logger.info(text);
   const groupId = await groupService.getGroupId(text);
   logger.info(groupId);
@@ -47,11 +51,12 @@ bot.command('schedule', async ctx => {
   if (groupId) {
     const data = await databaseService.getData(groupId);
 
-    const html = await ejs.renderFile(filename, data);
+    const template = fs.readFileSync(filename);
+    const html = await ejs.render(template.toString(), data);
 
     const image = await nodeHtmlToImage({
       html: html
-    });
+    }) as Buffer;
 
     await ctx.replyWithPhoto({ source: image }, { caption: group.title});
   } else {

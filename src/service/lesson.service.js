@@ -1,4 +1,4 @@
-const LessonModel = require('../models/lesson.model');
+import LessonModel from '../models/lesson.model';
 
 class LessonService {
   async removeAll() {
@@ -25,4 +25,4 @@ class LessonService {
   }
 }
 
-module.exports = new LessonService();
+export default new LessonService();

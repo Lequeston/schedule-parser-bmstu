@@ -1,7 +1,7 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const TeacherSchema = new Schema({
   fullName: {type: String, unique: true, required: true}
 });
 
-module.exports = model('Teacher', TeacherSchema);
+export default model('Teacher', TeacherSchema);

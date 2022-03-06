@@ -1,7 +1,7 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const ClassroomSchema = new Schema({
   number: {type: String, unique: true, required: true}
 });
 
-module.exports = model('Classroom', ClassroomSchema);
+export default model('Classroom', ClassroomSchema);

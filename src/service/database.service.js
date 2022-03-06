@@ -1,11 +1,11 @@
-const teacherService = require('./teacher.service.js');
-const classroomService = require('./classroom.service.js');
-const groupService = require('./group.service.js');
-const timeService = require('./time.service.js');
-const lessonTypeService = require('./lessonType.service.js');
-const weekdayService = require('./weekday.service.js');
-const lessonService = require('./lesson.service.js');
-const weekTypeService = require('./weekType.service.js');
+import teacherService from './teacher.service.js';
+import classroomService from './classroom.service.js';
+import groupService from './group.service.js';
+import timeService from './time.service.js';
+import lessonTypeService from './lessonType.service.js';
+import weekdayService from './weekday.service.js';
+import lessonService from './lesson.service.js';
+import weekTypeService from './weekType.service.js';
 
 class DatabaseService {
   async removeAllData() {
@@ -118,4 +118,4 @@ class DatabaseService {
   }
 }
 
-module.exports = new DatabaseService();
+export default new DatabaseService();

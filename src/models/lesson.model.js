@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const LessonSchema = new Schema({
   timeId: {type: Schema.Types.ObjectId, ref: 'Time'},
@@ -11,4 +11,4 @@ const LessonSchema = new Schema({
   title: {type: String, required: true}
 });
 
-module.exports = model('Lesson', LessonSchema);
+export default model('Lesson', LessonSchema);

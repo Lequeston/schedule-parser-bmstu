@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const UserSchema = new Schema({
   groupId: {type: Schema.Types.ObjectId, ref: 'Group'},
@@ -6,4 +6,4 @@ const UserSchema = new Schema({
   username: {type: String, unique: true, required: true}
 });
 
-module.exports = model('User', UserSchema);
+export default model('User', UserSchema);

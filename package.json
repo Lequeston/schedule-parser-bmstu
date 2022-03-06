@@ -1,13 +1,12 @@
 {
   "name": "bmstu",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=development nodemon --config config/nodemon.json",
-    "build": "cross-env NODE_ENV=production rimraf ./dist && tsc",
+    "dev": "nodemon --config config/nodemon.json --exec npm run start",
+    "build": "gulp -f ./config/gulpfile.js",
     "start": "npm run build && node dist/index.js",
-    "test": "cross-env NODE_ENV=test jest --config=config/jest.config.js"
+    "test": "jest --config=config/jest.config.js"
   },
   "dependencies": {
     "async": "^3.2.3",
@@ -24,7 +23,12 @@
   },
   "devDependencies": {
     "@types/async": "^3.2.12",
+    "@types/ejs": "^3.1.0",
     "cross-env": "^7.0.3",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
     "rimraf": "^3.0.2",

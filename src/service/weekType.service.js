@@ -1,5 +1,5 @@
-const WeekTypeModel = require('../models/weekType.model.js');
-const DatabaseParent = require('./classes/databaseParent.js');
+import WeekTypeModel from '../models/weekType.model.js';
+import DatabaseParent from './classes/databaseParent.js';
 
 class WeekTypeService extends DatabaseParent {
   async removeAll() {
@@ -22,4 +22,4 @@ class WeekTypeService extends DatabaseParent {
   }
 }
 
-module.exports = new WeekTypeService();
+export default new WeekTypeService();

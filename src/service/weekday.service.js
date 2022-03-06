@@ -1,5 +1,5 @@
-const WeekdayModel = require('../models/weekday.model.js');
-const DatabaseParent = require('./classes/databaseParent.js');
+import WeekdayModel from'../models/weekday.model.js';
+import DatabaseParent from'./classes/databaseParent.js';
 
 const weeksDays = [
   'ПН',
@@ -32,4 +32,4 @@ class WeekdayService extends DatabaseParent {
   }
 }
 
-module.exports = new WeekdayService();
+export default new WeekdayService();
