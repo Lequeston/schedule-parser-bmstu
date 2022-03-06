@@ -1,5 +1,5 @@
-const LessonTypeModel = require('../models/lessonType.model.js');
-const DatabaseParent = require('./classes/databaseParent.js');
+import LessonTypeModel from '../models/lessonType.model.js';
+import DatabaseParent from './classes/databaseParent.js';
 
 class LessonTypeService extends DatabaseParent {
   async removeAll() {
@@ -22,4 +22,4 @@ class LessonTypeService extends DatabaseParent {
   }
 }
 
-module.exports = new LessonTypeService();
+export default new LessonTypeService();

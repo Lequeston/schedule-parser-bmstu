@@ -1,5 +1,5 @@
-const ClassroomModel = require('../models/classroom.model.js');
-const DatabaseParent = require('./classes/databaseParent.js');
+import ClassroomModel from '../models/classroom.model.js';
+import DatabaseParent from './classes/databaseParent.js';
 
 class ClassroomService extends DatabaseParent {
   async removeAll() {
@@ -22,4 +22,4 @@ class ClassroomService extends DatabaseParent {
   }
 }
 
-module.exports = new ClassroomService();
+export default new ClassroomService();

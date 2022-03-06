@@ -1,7 +1,7 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 
 const GroupSchema = new Schema({
   title: {type: String, unique: true, required: true}
 });
 
-module.exports = model('Group', GroupSchema);
+export default model('Group', GroupSchema);

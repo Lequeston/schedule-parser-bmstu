@@ -1,5 +1,5 @@
-const TimeModel = require('../models/time.model.js');
-const DatabaseParent = require('./classes/databaseParent.js');
+import TimeModel from '../models/time.model.js';
+import DatabaseParent from './classes/databaseParent.js';
 
 class TimeService extends DatabaseParent{
   async removeAll() {
@@ -31,4 +31,4 @@ class TimeService extends DatabaseParent{
   }
 }
 
-module.exports = new TimeService();
+export default new TimeService();

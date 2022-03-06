@@ -1,5 +1,5 @@
-const GroupModel = require('../models/group.model.js');
-const DatabaseParent = require('./classes/databaseParent.js');
+import GroupModel from '../models/group.model.js';
+import DatabaseParent from './classes/databaseParent.js';
 
 class GroupService extends DatabaseParent {
   async removeAll() {
@@ -33,4 +33,4 @@ class GroupService extends DatabaseParent {
   }
 }
 
-module.exports = new GroupService();
+export default new GroupService();

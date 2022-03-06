@@ -1,4 +1,4 @@
-const userModel = require('../models/user.model');
+import userModel from '../models/user.model';
 
 class UserService {
   async saveGroup(userId, groupId, username) {
@@ -19,4 +19,4 @@ class UserService {
   }
 }
 
-module.exports = new UserService();
+export default new UserService();

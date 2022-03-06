@@ -12,4 +12,4 @@ class DatabaseParent {
   }
 }
 
-module.exports = DatabaseParent;
+export default DatabaseParent;
