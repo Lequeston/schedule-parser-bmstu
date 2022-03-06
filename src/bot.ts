@@ -13,8 +13,17 @@ import groupService from './service/group.service.js';
 import userService from './service/user.service.js';
 // @ts-ignore
 import databaseService from './service/database.service.js';
+import { appStatus } from './statusApp';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
+
+bot.use((ctx, next) => {
+  if (appStatus === 'SAVING_DATA') {
+    ctx.reply('Сейчас сервис не доступен');
+  } else {
+    next();
+  }
+});
 
 bot.use(async (ctx, next) => {
   await dbConnect();
@@ -64,5 +73,7 @@ bot.command('schedule', async ctx => {
   }
 });
 
+process.once('SIGINT', () => bot.stop('SIGINT'))
+process.once('SIGTERM', () => bot.stop('SIGTERM'))
 
 export default bot;

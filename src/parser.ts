@@ -3,9 +3,10 @@ import * as cheerio from 'cheerio';
 import async from 'async';
 
 import { ParserData, ParserLesson } from './types/parser';
+import appStatusService from './statusApp';
 
 const parse = async (
-  saveData: (data: ParserData) => void, 
+  saveData: (data: ParserData) => void,
   whiteListGroups?: Array<string>
 ) => {
   try {
@@ -118,9 +119,12 @@ const parse = async (
     const q = async.queue(parserSchedule);
 
     q.drain(async() => {
+      appStatusService.emit('end_parsing');
       const data = mergingData();
       await saveData(data);
     });
+    console.log('parse start');
+    appStatusService.emit('start_parsing');
     q.push(siteUrl);
   } catch(e) {
     console.error(e);
