@@ -4,15 +4,14 @@ import path from 'path';
 import nodeHtmlToImage from 'node-html-to-image';
 import fs from 'fs';
 
-import logger from './config/logger';
-import { dbConnect, dbDisconnect } from './db';
+import logger from '../config/logger';
 
 // @ts-ignore
 import groupService from './service/group.service.js';
 // @ts-ignore
 import userService from './service/user.service.js';
 // @ts-ignore
-import databaseService from './service/database.service.js';
+import databaseService from '../service/database.service.js';
 import { appStatus } from './statusApp';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
@@ -23,12 +22,6 @@ bot.use((ctx, next) => {
   } else {
     next();
   }
-});
-
-bot.use(async (ctx, next) => {
-  await dbConnect();
-  await next();
-  await dbDisconnect();
 });
 
 bot.start((ctx) => {

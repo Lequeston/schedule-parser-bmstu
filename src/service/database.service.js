@@ -1,4 +1,4 @@
-import teacherService from './teacher.service.js';
+/*import teacherService from './teacher.service.js';
 import classroomService from './classroom.service.js';
 import groupService from './group.service.js';
 import timeService from './time.service.js';
@@ -119,3 +119,4 @@ class DatabaseService {
 }
 
 export default new DatabaseService();
+*/

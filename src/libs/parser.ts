@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import async from 'async';
 
-import { ParserData, ParserLesson } from './types/parser';
+import { ParserData, ParserLesson } from '../types/parser';
 import appStatusService from './statusApp';
 
 const parse = async (
