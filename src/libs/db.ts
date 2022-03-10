@@ -19,6 +19,8 @@ import WeekType from "../models/weekType.model";
 
 import groupService from "../service/GroupService";
 import { ParserData } from "../types/parser";
+import classroomService from "../service/ClassroomService";
+import timeService from "../service/TimeService";
 
 const connectionManager = getConnectionManager();
 export const connection = connectionManager.create({
@@ -44,5 +46,9 @@ export const saveParseData = async (data: ParserData) => {
   appStatusService.emit('start_saving_data');
   await groupService.clear();
   await groupService.saveArray(data.groups);
+  await classroomService.clear();
+  await classroomService.saveArray(data.offices);
+  await timeService.clear();
+  await timeService.saveArray(data.times);
   appStatusService.emit('end_saving_data');
 }

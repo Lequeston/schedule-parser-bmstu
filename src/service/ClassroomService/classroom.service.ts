@@ -21,7 +21,7 @@ export class ClassroomService {
   }
 
   async getAllValues(): Promise<Classroom[]> {
-    return getConnection()
+    return await getConnection()
       .getRepository(Classroom)
       .createQueryBuilder('classroom')
       .getMany();
