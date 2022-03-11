@@ -3,8 +3,15 @@ import Classroom from "../../models/classroom.model";
 
 export class ClassroomService {
 
-  public normalization(number: string) {
+  private normalization(number: string) {
     return number.trim();
+  }
+
+  public findElem(value: string, array: Array<Classroom>): Classroom | undefined {
+    const classroom = array.find(classroom => {
+      return this.normalization(value) === this.normalization(classroom.number);
+    });
+    return classroom;
   }
 
   async find(number: string): Promise<Classroom | undefined> {

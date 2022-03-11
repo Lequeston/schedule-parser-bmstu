@@ -12,8 +12,15 @@ export class WeekDayService {
     'ВС'
   ];
 
-  public normalization(title: string) {
+  private normalization(title: string) {
     return title.trim().toUpperCase();
+  }
+
+  public findElem(value: string, array: Array<Weekday>): Weekday | undefined {
+    const weekDay = array.find(weekDay => {
+      return this.normalization(value) === this.normalization(weekDay.title);
+    });
+    return weekDay;
   }
 
   async clear(): Promise<void> {

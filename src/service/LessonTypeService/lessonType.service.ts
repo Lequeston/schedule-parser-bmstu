@@ -2,11 +2,18 @@ import { getConnection, InsertResult } from "typeorm";
 import LessonType from "../../models/lessonType.model";
 
 export class LessonTypeService {
-  public normalization(title: string) {
+  private normalization(title: string) {
     return title
       .trim()
       .replace(/[^А-Яа-яЁё]/g, '')
       .toLowerCase();
+  }
+
+  public findElem(value: string, array: Array<LessonType>): LessonType | undefined {
+    const lessonType = array.find(lessonType => {
+      return this.normalization(value) === this.normalization(lessonType.title);
+    });
+    return lessonType;
   }
 
   async clear(): Promise<void> {

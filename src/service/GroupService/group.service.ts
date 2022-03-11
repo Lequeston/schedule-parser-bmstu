@@ -7,7 +7,7 @@ import departmentService from "../DepartmentService";
 import facultyService from "../FacultyService";
 
 export class GroupService {
-  public normalization(title: string) {
+  private normalization(title: string) {
     return title.trim();
   }
 
@@ -26,6 +26,12 @@ export class GroupService {
     }
   }
 
+  public findElem(value: string, array: Array<Group>): Group | undefined {
+    const group = array.find(group => {
+      return this.normalization(value) === this.normalization(group.title);
+    });
+    return group;
+  }
   async find(title: string): Promise<Group | undefined> {
     const group = await getRepository(Group).findOne({ title });
     return group;
@@ -40,7 +46,7 @@ export class GroupService {
     await departmentService.clear();
   }
 
-  async getAll(): Promise<Group[]> {
+  async getAllValues(): Promise<Group[]> {
     return getConnection()
       .getRepository(Group)
       .createQueryBuilder('group')

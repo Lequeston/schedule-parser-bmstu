@@ -2,8 +2,15 @@ import { getConnection } from "typeorm";
 import WeekType from "../../models/weekType.model";
 
 export class WeekTypeService {
-  public normalization(title: string) {
+  private normalization(title: string) {
     return title.trim().toUpperCase();
+  }
+
+  public findElem(value: string, array: Array<WeekType>): WeekType | undefined {
+    const weekType = array.find(weekType => {
+      return this.normalization(value) === this.normalization(weekType.title);
+    });
+    return weekType;
   }
 
   async clear(): Promise<void> {
