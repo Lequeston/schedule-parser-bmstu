@@ -1,7 +1,7 @@
 import { getConnection, InsertResult } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import Lesson from "../../models/lesson.model";
-import { ParserLesson } from "../../types/parser";
+import { ParserData, ParserLesson } from "../../types/parser";
 import classroomService from "../ClassroomService";
 import groupService from "../GroupService";
 import lessonTypeService from "../LessonTypeService";
@@ -22,6 +22,13 @@ export class LessonService {
       .delete()
       .from(Lesson)
       .execute();
+    await groupService.clear();
+    await classroomService.clear();
+    await timeService.clear();
+    await weekTypeService.clear();
+    await teacherService.clear();
+    await lessonTypeService.clear();
+    await weekDayService.clear();
   }
 
   async saveArray(lessonArray: Array<ParserLesson>): Promise<void> {
@@ -56,5 +63,17 @@ export class LessonService {
           .execute();
       })
     )
+  }
+
+  async save(data: ParserData) {
+    await this.clear();
+    await groupService.saveArray(data.groups);
+    await classroomService.saveArray(data.offices);
+    await timeService.saveArray(data.times);
+    await weekTypeService.saveArray(data.weekTypes);
+    await teacherService.saveArray(data.teachers);
+    await lessonTypeService.saveArray(data.lessonTypes);
+    await weekDayService.saveArray();
+    await this.saveArray(data.data);
   }
 }

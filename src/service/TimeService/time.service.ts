@@ -5,17 +5,19 @@ export class TimeService {
   private normalization(timeValue: string) {
     const time = timeValue.trim();
     const [startTimeStr, endTimeStr] = time.split('-');
+    const startTimeArr = startTimeStr.trim().split(':');
+    const endTimeArr = endTimeStr.trim().split(':');
     return ({
-      startTime: startTimeStr.trim(),
-      endTime: endTimeStr.trim()
+      startTime: `${startTimeArr[0]}:${startTimeArr[1]}:00`,
+      endTime: `${endTimeArr[0]}:${endTimeArr[1]}:00`
     });
   }
 
   public findElem(value: string, array: Array<Time>): Time | undefined {
     const time = array.find(time => {
       const timeValue = this.normalization(value);
-      return Date.parse(time.start) === Date.parse(timeValue.startTime) &&
-        Date.parse(time.end) === Date.parse(timeValue.endTime);
+      return time.start === timeValue.startTime &&
+        time.end === timeValue.endTime;
     });
     return time;
   }

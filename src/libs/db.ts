@@ -1,9 +1,6 @@
 import "reflect-metadata";
 import { getConnectionManager } from "typeorm";
-import fs from 'fs';
 
-// @ts-ignore
-import databaseService from './service/database.service';
 import appStatusService from './statusApp';
 
 import Classroom from "../models/classroom.model";
@@ -18,15 +15,8 @@ import User from "../models/user.model";
 import Weekday from "../models/weekday.model";
 import WeekType from "../models/weekType.model";
 
-import groupService from "../service/GroupService";
-import { ParserData } from "../types/parser";
-import classroomService from "../service/ClassroomService";
-import timeService from "../service/TimeService";
-import weekTypeService from "../service/WeekTypeService";
-import teacherService from "../service/TeacherService";
-import lessonTypeService from "../service/LessonTypeService";
-import weekDayService from "../service/WeekDayService";
 import lessonService from "../service/LessonService";
+import { ParserData } from "../types/parser";
 
 const connectionManager = getConnectionManager();
 export const connection = connectionManager.create({
@@ -50,22 +40,6 @@ export const dbDisconnect = async () => {
 
 export const saveParseData = async (data: ParserData) => {
   appStatusService.emit('start_saving_data');
-  fs.writeFileSync('./data.json', JSON.stringify(data, null, 2));
-  await lessonService.clear();
-  await groupService.clear();
-  await groupService.saveArray(data.groups);
-  await classroomService.clear();
-  await classroomService.saveArray(data.offices);
-  await timeService.clear();
-  await timeService.saveArray(data.times);
-  await weekTypeService.clear();
-  await weekTypeService.saveArray(data.weekTypes);
-  await teacherService.clear();
-  await teacherService.saveArray(data.teachers);
-  await lessonTypeService.clear();
-  await lessonTypeService.saveArray(data.lessonTypes);
-  await weekDayService.clear();
-  await weekDayService.saveArray();
-  await lessonService.saveArray(data.data);
+  lessonService.save(data);
   appStatusService.emit('end_saving_data');
 }
