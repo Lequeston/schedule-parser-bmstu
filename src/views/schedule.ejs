@@ -60,40 +60,43 @@
 <body>
 
   <section class="container">
-    <h2><%= groupTitle %></h2>
-    <% days.forEach((day) => { %>
-      <table class="table">
-        <tr>
-          <th rowspan="9" class="day"><%= day.dayTitle %></th>
-          <th class="time">Время</th>
-          <% types.forEach((type) => { %>
-            <th><%= type.title %></th>
-          <% }); %>
-        </tr>
-        <% day.times.forEach(({ time, lessons }) => { %>
+    <% groups.forEach((value) => { %>
+      <h2><%= value.group %></h2>
+      <% value.days.forEach((day) => { %>
+        <table class="table">
           <tr>
-            <td class="time" ><%= time %></td>
-            <% if (lessons[0] && lessons[1] && lessons[0].title === lessons[1].title) { %>
-              <td colspan="2">
-                <i><%= lessons[0].type %></i>
-                <span><%= lessons[0].title %></span>
-                <i><%= lessons[0].office %></i>
-                <i><%= lessons[0].teacher %></i>
-              </td>
-            <% } else { %>
-              <% lessons.forEach((lesson) => { %>
-                <td>
-                  <i><%= lesson && lesson.type %></i>
-                  <span><%= lesson && lesson.title %></span>
-                  <i><%= lesson && lesson.office %></i>
-                  <i><%= lesson && lesson.teacher %></i>
-                </td>
-              <% }); %>
-            <% } %>
+            <th rowspan="9" class="day"><%= day.weekDay.title %></th>
+            <th class="time">Время</th>
+            <% weekTypes.forEach((type) => { %>
+              <th><%= type.title %></th>
+            <% }); %>
           </tr>
-        <% }); %>
-      </table>
-    <% }); %>
+          <% day.times.forEach(({ time, lessons }) => { %>
+            <tr>
+              <td class="time" ><%= time %></td>
+              <% if (lessons.length > 1 && lessons[0].title === lessons[1].title) { %>
+                <td colspan="2">
+                  <i><%= (lessons[0].lessonType && lessons[0].lessonType.title) ? `(${lessons[0].lessonType.title})` : '' %></i>
+                  <span><%= lessons[0].title %></span>
+                  <i><%= lessons[0].classroom && lessons[0].classroom.number %></i>
+                  <i><%= lessons[0].teacher && lessons[0].teacher.fullName %></i>
+                </td>
+              <% } else { %>
+                <% weekTypes.forEach((weekType) => { %>
+                  <% const lesson = lessons.find(lesson => weekType.id === lesson.weekType.id) %>
+                  <td>
+                    <i><%= (lesson && lesson.lessonType && lesson.lessonType.title) ? `(${lesson.lessonType.title})` : '' %></i>
+                    <span><%= lesson ? lesson.title : '' %></span>
+                    <i><%= (lesson && lesson.classroom) ? lesson.classroom.number : '' %></i>
+                    <i><%= (lesson && lesson.teacher) ? lesson.teacher.fullName : '' %></i>
+                  </td>
+                <% }); %>
+              <% } %>
+            </tr>
+          <% }); %>
+        </table>
+      <% }) %>
+    <% }) %>
   </section>
   <footer>
     <i>&copy; generated @bmstu_chat_bot</i>

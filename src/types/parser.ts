@@ -11,9 +11,9 @@ export type ParserLesson = {
 
 export type ParserData = {
   data: Array<ParserLesson>,
-  times: Array<String>,
-  teachers: Array<String>,
-  weekTypes: Array<String>,
+  times: Array<string>,
+  teachers: Array<string>,
+  weekTypes: Array<string>,
   offices: Array<string>,
   lessonTypes: Array<string>,
   groups: Array<string>,
