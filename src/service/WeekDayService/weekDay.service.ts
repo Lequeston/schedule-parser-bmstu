@@ -35,6 +35,7 @@ export class WeekDayService {
     return await getConnection()
       .getRepository(Weekday)
       .createQueryBuilder('weekDay')
+      .orderBy('weekDay.numberDay')
       .getMany();
   }
 

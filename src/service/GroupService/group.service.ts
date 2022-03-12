@@ -1,10 +1,10 @@
 import { DeleteResult, getConnection, getRepository, InsertResult } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { deleteFalseValuesFilter } from "../../libs/project/array";
 import Department from "../../models/department.model";
 import Group from "../../models/group.model";
 import departmentService from "../DepartmentService";
 import facultyService from "../FacultyService";
+import _ from 'lodash';
 
 export class GroupService {
   private normalization(title: string) {
@@ -77,8 +77,8 @@ export class GroupService {
     groupsArray: Array<string>
   ): Promise<InsertResult> {
     const departments = await this.saveDepartment(groupsArray);
-    const groups: QueryDeepPartialEntity<Group>[] = groupsArray
-      .map((groupValue: string): QueryDeepPartialEntity<Group> | undefined => {
+    const groups: QueryDeepPartialEntity<Group>[] = _.compact(
+      groupsArray.map((groupValue: string): QueryDeepPartialEntity<Group> | undefined => {
         const group = this.normalization(groupValue);
         const department = departments.find(department => group.indexOf(department.number) === 0);
         return department ? ({
@@ -86,7 +86,7 @@ export class GroupService {
           department
         }) : undefined;
       })
-      .filter(deleteFalseValuesFilter);
+    );
     return await getConnection()
       .createQueryBuilder()
       .insert()

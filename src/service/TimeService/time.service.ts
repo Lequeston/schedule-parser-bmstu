@@ -34,6 +34,7 @@ export class TimeService {
     return await getConnection()
       .getRepository(Time)
       .createQueryBuilder('time')
+      .orderBy('time.start')
       .getMany();
   }
 

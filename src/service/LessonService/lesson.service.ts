@@ -1,4 +1,4 @@
-import { getConnection, InsertResult } from "typeorm";
+import { createQueryBuilder, getConnection, getRepository, InsertResult } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import Lesson from "../../models/lesson.model";
 import { ParserData, ParserLesson } from "../../types/parser";
@@ -9,6 +9,11 @@ import teacherService from "../TeacherService";
 import timeService from "../TimeService";
 import weekDayService from "../WeekDayService";
 import weekTypeService from "../WeekTypeService";
+import _, { times } from 'lodash';
+import Weekday from "../../models/weekday.model";
+import Time from "../../models/time.model";
+import Group from "../../models/group.model";
+import { GroupByGroupData } from "../../types/groupsBy";
 
 export class LessonService {
 
@@ -75,5 +80,59 @@ export class LessonService {
     await lessonTypeService.saveArray(data.lessonTypes);
     await weekDayService.saveArray();
     await this.saveArray(data.data);
+  }
+
+  async getLessonsGroup(groupTitle: string): Promise<Lesson[]> {
+    return await getConnection()
+      .createQueryBuilder()
+      .select('lesson')
+      .from(Lesson, 'lesson')
+      .leftJoinAndSelect('lesson.classroom', 'classroom')
+      .leftJoinAndSelect('lesson.group', 'group')
+      .leftJoinAndSelect('lesson.time', 'time')
+      .leftJoinAndSelect('lesson.weekType', 'weekType')
+      .leftJoinAndSelect('lesson.weekday', 'weekday')
+      .leftJoinAndSelect('lesson.teacher', 'teacher')
+      .leftJoinAndSelect('lesson.lessonType', 'lessonType')
+      .where('group.title = :title', {title: groupTitle})
+      .getMany();
+  }
+
+  private parseToObjectScheduleGroup(lessons: Lesson[], weekdays: Weekday[], times: Time[]): GroupByGroupData[] {
+    const groups: Group[] = Array.from(
+      lessons.reduce((acc, lesson) => {
+        return acc.add(lesson.group);
+      }, new Set<Group>())
+    );
+    const groupByTimes = (lessons: Lesson[]) => {
+      return times
+        .map(time => ({
+          time,
+          lessons: lessons.filter(lesson => lesson.time.id === time.id)
+        }))
+    }
+    const groupByDays = (lessons: Lesson[]) => {
+      return weekdays
+        .map(weekDay => ({
+          weekDay,
+          times: groupByTimes(
+            lessons.filter(lesson => lesson.weekday.id === weekDay.id)
+          )
+        }))
+    }
+    const groupByGroup = groups.map(group => ({
+      group,
+      days: groupByDays(
+        lessons.filter(lesson => lesson.group.id === group.id)
+      )
+    }));
+    return groupByGroup;
+  }
+
+  async getScheduleGroup(groupTitle: string): Promise<GroupByGroupData[]> {
+    const lessons = await this.getLessonsGroup(groupTitle);
+    const weekDays = await weekDayService.getAllValues();
+    const times = await timeService.getAllValues();
+    return this.parseToObjectScheduleGroup(lessons, weekDays, times);
   }
 }

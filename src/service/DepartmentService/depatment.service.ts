@@ -1,9 +1,9 @@
 import { DeleteResult, getConnection, getRepository, InsertResult, Repository } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
-import { deleteFalseValuesFilter } from "../../libs/project/array";
 import Department from "../../models/department.model";
 import Faculty from "../../models/faculty.model";
 import facultyService from "../FacultyService";
+import _ from 'lodash';
 
 export class DepartmentService {
 
@@ -36,8 +36,8 @@ export class DepartmentService {
     departmentsArray: Array<string>,
     faculties: Array<Faculty>
   ): Promise<InsertResult> {
-    const departments: QueryDeepPartialEntity<Department>[] = departmentsArray
-      .map((depart: string): QueryDeepPartialEntity<Department> | undefined => {
+    const departments: QueryDeepPartialEntity<Department>[] = _.compact(
+      departmentsArray.map((depart: string): QueryDeepPartialEntity<Department> | undefined => {
         const department = this.normalization(depart);
         const faculty = faculties.find(faculty => department.indexOf(faculty.title) === 0);
         return faculty ? ({
@@ -45,7 +45,7 @@ export class DepartmentService {
           faculty
         }) : undefined;
       })
-      .filter(deleteFalseValuesFilter);
+    );
     return await getConnection()
       .createQueryBuilder()
       .insert()
