@@ -10,12 +10,12 @@ import bot from './libs/bot';
 
 const isParsing: boolean = Boolean(process.env.IS_PARSING) || false;
 
-console.info(process.pid);
+logger.info(process.pid);
 
 const parseJob = new CronJob('00 00 3 * * 0', () => {
-  console.log(appStatus);
+  logger.log(appStatus);
   if (appStatus === 'BOT_WORK') {
-    console.log('parsing');
+    logger.log('parsing');
     parse(saveParseData);
   }
 }, null, true, 'Europe/Moscow');
@@ -27,7 +27,7 @@ const start = async () => {
     parseJob.start();
     await bot.launch();
   } catch(e) {
-    console.error(e);
+    logger.error(e);
   }
 }
 

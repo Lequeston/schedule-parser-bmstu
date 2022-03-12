@@ -4,6 +4,7 @@ import async from 'async';
 
 import { ParserData, ParserLesson } from '../types/parser';
 import appStatusService from './statusApp';
+import logger from '../config/logger';
 
 const parse = async (
   saveData: (data: ParserData) => void,
@@ -111,7 +112,7 @@ const parse = async (
           }
         });
       } else {
-        console.error(res.status);
+        logger.info(res.status);
       }
       callback();
     }
@@ -127,7 +128,7 @@ const parse = async (
     appStatusService.emit('start_parsing');
     q.push(siteUrl);
   } catch(e) {
-    console.error(e);
+    logger.info(e);
   }
 }
 

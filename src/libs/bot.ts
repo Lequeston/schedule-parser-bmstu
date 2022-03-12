@@ -50,12 +50,12 @@ bot.command('schedule', async ctx => {
   //const groupId = await userService.getGroupId(ctx.from.id);
   const group = wordArray && wordArray[1] && wordArray[1].toUpperCase();
   const filename = path.resolve(__dirname, '..', 'views', 'schedule.ejs');
+  logger.info(ctx.from.username, group);
 
   if (group) {
     const data = await lessonService.getScheduleGroup(group);
     const weekTypes = await weekTypeService.getAllValues();
     const template = fs.readFileSync(filename);
-    logger.info(JSON.stringify(data, null, 2));
     const html = await ejs.render(template.toString(), { groups: data, weekTypes });
 
     const image = await nodeHtmlToImage({

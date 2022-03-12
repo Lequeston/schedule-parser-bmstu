@@ -17,6 +17,7 @@ import WeekType from "../models/weekType.model";
 
 import lessonService from "../service/LessonService";
 import { ParserData } from "../types/parser";
+import logger from "../config/logger";
 
 const connectionManager = getConnectionManager();
 export const connection = connectionManager.create({
@@ -43,7 +44,7 @@ export const saveParseData = async (data: ParserData) => {
     appStatusService.emit('start_saving_data');
     lessonService.save(data);
   } catch(e) {
-    console.error(e);
+    logger.info(e);
   } finally {
     appStatusService.emit('end_saving_data');
   }
