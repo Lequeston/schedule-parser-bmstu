@@ -108,7 +108,9 @@ export class LessonService {
       return times
         .map(time => ({
           time,
-          lessons: lessons.filter(lesson => lesson.time.id === time.id)
+          lessons: lessons
+            .filter(lesson => lesson.time.id === time.id)
+            .sort((a, b) => b.weekType.title.localeCompare(a.weekType.title))
         }))
     }
     const groupByDays = (lessons: Lesson[]) => {
