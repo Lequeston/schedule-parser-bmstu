@@ -8,8 +8,7 @@ export class WeekDayService {
     'СР',
     'ЧТ',
     'ПТ',
-    'СБ',
-    'ВС'
+    'СБ'
   ];
 
   private normalization(title: string) {

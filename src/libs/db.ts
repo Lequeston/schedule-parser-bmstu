@@ -39,7 +39,12 @@ export const dbDisconnect = async () => {
 }
 
 export const saveParseData = async (data: ParserData) => {
-  appStatusService.emit('start_saving_data');
-  lessonService.save(data);
-  appStatusService.emit('end_saving_data');
+  try {
+    appStatusService.emit('start_saving_data');
+    lessonService.save(data);
+  } catch(e) {
+    console.error(e);
+  } finally {
+    appStatusService.emit('end_saving_data');
+  }
 }
