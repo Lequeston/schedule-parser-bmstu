@@ -4,11 +4,11 @@ import Time from "../models/time.model";
 import Weekday from "../models/weekday.model";
 
 export type GroupByGroupData = {
-  group: Group;
+  group: string;
   days: {
       weekDay: Weekday;
       times: {
-          time: Time;
+          time: string;
           lessons: Lesson[];
       }[];
   }[];

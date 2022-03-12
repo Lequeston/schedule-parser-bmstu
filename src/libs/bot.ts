@@ -6,13 +6,9 @@ import fs from 'fs';
 
 import logger from '../config/logger';
 
-// @ts-ignore
-import groupService from './service/group.service.js';
-// @ts-ignore
-import userService from './service/user.service.js';
-// @ts-ignore
-import databaseService from '../service/database.service.js';
 import { appStatus } from './statusApp';
+import lessonService from '../service/LessonService';
+import weekTypeService from '../service/WeekTypeService';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
@@ -28,6 +24,7 @@ bot.start((ctx) => {
   ctx.reply('Добро пожаловать!');
 });
 
+/*
 bot.command('group', async ctx => {
   const wordArray = ctx
     .message
@@ -43,24 +40,29 @@ bot.command('group', async ctx => {
   } else {
     await ctx.reply('Группа ведена некорректно');
   }
-});
+});*/
 
 bot.command('schedule', async ctx => {
-  const groupId = await userService.getGroupId(ctx.from.id);
-  const group = await groupService.getGroup(groupId);
-  const filename = path.resolve(__dirname, 'views', 'schedule.ejs');
+  const wordArray = ctx
+    .message
+    .text
+    .split(' ');
+  //const groupId = await userService.getGroupId(ctx.from.id);
+  const group = wordArray && wordArray[1] && wordArray[1].toUpperCase();
+  const filename = path.resolve(__dirname, '..', 'views', 'schedule.ejs');
 
-  if (groupId) {
-    const data = await databaseService.getData(groupId);
-
+  if (group) {
+    const data = await lessonService.getScheduleGroup(group);
+    const weekTypes = await weekTypeService.getAllValues();
     const template = fs.readFileSync(filename);
-    const html = await ejs.render(template.toString(), data);
+    logger.info(JSON.stringify(data, null, 2));
+    const html = await ejs.render(template.toString(), { groups: data, weekTypes });
 
     const image = await nodeHtmlToImage({
       html: html
     }) as Buffer;
 
-    await ctx.replyWithPhoto({ source: image }, { caption: group.title});
+    await ctx.replyWithPhoto({ source: image }, { caption: group });
   } else {
     await ctx.reply('Группа ведена некорректно');
   }

@@ -25,6 +25,7 @@ export class WeekTypeService {
     return await getConnection()
       .getRepository(WeekType)
       .createQueryBuilder('weekType')
+      .orderBy('weekType.title', 'DESC')
       .getMany();
   }
 

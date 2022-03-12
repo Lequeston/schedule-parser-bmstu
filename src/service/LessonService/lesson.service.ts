@@ -99,19 +99,23 @@ export class LessonService {
   }
 
   private parseToObjectScheduleGroup(lessons: Lesson[], weekdays: Weekday[], times: Time[]): GroupByGroupData[] {
-    const groups: Group[] = Array.from(
+    const groups: string[] = Array.from(
       lessons.reduce((acc, lesson) => {
-        return acc.add(lesson.group);
-      }, new Set<Group>())
+        return acc.add(lesson.group.title);
+      }, new Set<string>())
     );
     const groupByTimes = (lessons: Lesson[]) => {
       return times
-        .map(time => ({
-          time,
-          lessons: lessons
-            .filter(lesson => lesson.time.id === time.id)
-            .sort((a, b) => b.weekType.title.localeCompare(a.weekType.title))
-        }))
+        .map(time => {
+          const startArr = time.start.split(':');
+          const endArr = time.end.split(':');
+          return ({
+            time: `${startArr[0]}:${startArr[1]} - ${endArr[0]}:${endArr[1]}`,
+            lessons: lessons
+              .filter(lesson => lesson.time.id === time.id)
+              .sort((a, b) => b.weekType.title.localeCompare(a.weekType.title))
+          })
+        })
     }
     const groupByDays = (lessons: Lesson[]) => {
       return weekdays
@@ -125,7 +129,7 @@ export class LessonService {
     const groupByGroup = groups.map(group => ({
       group,
       days: groupByDays(
-        lessons.filter(lesson => lesson.group.id === group.id)
+        lessons.filter(lesson => lesson.group.title === group)
       )
     }));
     return groupByGroup;
