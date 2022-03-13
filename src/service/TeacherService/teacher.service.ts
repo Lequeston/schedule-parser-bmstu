@@ -1,4 +1,5 @@
 import { getConnection, InsertResult } from "typeorm";
+import logger from "../../config/logger";
 import Teacher from "../../models/teacher.model";
 
 export class TeacherService {
@@ -29,10 +30,15 @@ export class TeacherService {
   }
 
   async getTeachers(teacher: string): Promise<Teacher[]> {
+    logger.info(getConnection()
+      .getRepository(Teacher)
+      .createQueryBuilder('teacher')
+      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${teacher}', '\\W+', '', 'g')`)
+      .getQuery());
     return await getConnection()
       .getRepository(Teacher)
       .createQueryBuilder('teacher')
-      .where(`regexp_replace("teacher"."fullName", '\W+', '', 'g') ~* regexp_replace('${teacher}', '\W+', '', 'g')`)
+      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${teacher}', '\\W+', '', 'g')`)
       .getMany();
   }
 

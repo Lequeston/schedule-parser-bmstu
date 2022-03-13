@@ -112,7 +112,7 @@ export class LessonService {
       .leftJoinAndSelect('lesson.weekday', 'weekday')
       .leftJoinAndSelect('lesson.teacher', 'teacher')
       .leftJoinAndSelect('lesson.lessonType', 'lessonType')
-      .where(`regexp_replace("teacher"."fullName", '\W+', '', 'g') ~* regexp_replace('${teacher}', '\W+', '', 'g')`)
+      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${teacher}', '\\W+', '', 'g')`)
       .getMany();
   }
 
