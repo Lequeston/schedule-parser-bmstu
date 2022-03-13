@@ -9,6 +9,7 @@ import logger from '../config/logger';
 import { appStatus } from './statusApp';
 import lessonService from '../service/LessonService';
 import weekTypeService from '../service/WeekTypeService';
+import teacherService from '../service/TeacherService';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
@@ -56,7 +57,7 @@ bot.command('schedule', async ctx => {
     const data = await lessonService.getScheduleGroup(group);
     const weekTypes = await weekTypeService.getAllValues();
     const template = fs.readFileSync(filename);
-    const html = await ejs.render(template.toString(), { groups: data, weekTypes });
+    const html = await ejs.render(template.toString(), { values: data, weekTypes });
 
     const image = await nodeHtmlToImage({
       html: html
@@ -65,6 +66,35 @@ bot.command('schedule', async ctx => {
     await ctx.replyWithPhoto({ source: image }, { caption: group });
   } else {
     await ctx.reply('Группа ведена некорректно');
+  }
+});
+
+bot.command('teacher', async ctx => {
+  const wordArray = ctx
+    .message
+    .text
+    .split(' ');
+
+  const teacherWord = wordArray && wordArray.slice(1).join(' ');
+  const filename = path.resolve(__dirname, '..', 'views', 'schedule.ejs');
+  const teachers = await teacherService.getTeachers(teacherWord);
+  logger.info(ctx.from.username, teacherWord);
+  if (teachers.length > 1) {
+    ctx.reply(`Есть несколько преподавателей с такой фамилией: \n ${teachers.map(teacher => teacher.fullName).join('\n')}`);
+  } else if (teachers.length === 1) {
+    const teacher = teachers[0];
+    const data = await lessonService.getScheduleTeacher(teacher.fullName);
+    const weekTypes = await weekTypeService.getAllValues();
+    const template = fs.readFileSync(filename);
+    const html = await ejs.render(template.toString(), { values: data, weekTypes });
+
+    const image = await nodeHtmlToImage({
+      html: html
+    }) as Buffer;
+
+    await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
+  } else {
+    await ctx.reply('Преподаватель введен некорректно');
   }
 });
 

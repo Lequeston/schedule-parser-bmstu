@@ -28,6 +28,14 @@ export class TeacherService {
       .getMany();
   }
 
+  async getTeachers(teacher: string): Promise<Teacher[]> {
+    return await getConnection()
+      .getRepository(Teacher)
+      .createQueryBuilder('teacher')
+      .where(`regexp_replace("teacher"."fullName", '\W+', '', 'g') ~* regexp_replace('${teacher}', '\W+', '', 'g')`)
+      .getMany();
+  }
+
   async saveArray(teacherArray: Array<string>): Promise<InsertResult> {
     const teachers = teacherArray.map(teacher => {
       const fullName = this.normalization(teacher);

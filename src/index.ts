@@ -13,9 +13,9 @@ const isParsing: boolean = Boolean(process.env.IS_PARSING) || false;
 logger.info(process.pid);
 
 const parseJob = new CronJob('00 00 3 * * 0', () => {
-  logger.log(appStatus);
+  logger.info(appStatus);
   if (appStatus === 'BOT_WORK') {
-    logger.log('parsing');
+    logger.info('parsing');
     parse(saveParseData);
   }
 }, null, true, 'Europe/Moscow');
@@ -23,8 +23,7 @@ const parseJob = new CronJob('00 00 3 * * 0', () => {
 const start = async () => {
   try {
     await connection.connect();
-    isParsing && parse(saveParseData);
-    parseJob.start();
+    isParsing && parseJob.start();
     await bot.launch();
   } catch(e) {
     logger.error(e);

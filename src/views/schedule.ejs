@@ -60,8 +60,13 @@
 <body>
 
   <section class="container">
-    <% groups.forEach((value) => { %>
-      <h2><%= value.group %></h2>
+    <% values.forEach((value) => { %>
+      <% if(value.group) { %>
+        <h2><%= value.group %></h2>
+      <% } %>
+      <% if(value.teacher) { %>
+        <h2><%= value.teacher %></h2>
+      <% } %>
       <% value.days.forEach((day) => { %>
         <table class="table">
           <tr>
@@ -79,7 +84,13 @@
                   <i><%= (lessons[0].lessonType && lessons[0].lessonType.title) ? `(${lessons[0].lessonType.title})` : '' %></i>
                   <span><%= lessons[0].title %></span>
                   <i><%= lessons[0].classroom && lessons[0].classroom.number %></i>
-                  <i><%= lessons[0].teacher && lessons[0].teacher.fullName %></i>
+                  <% if(value.group) { %>
+                    <i><%= lessons[0].teacher && lessons[0].teacher.fullName %></i>
+                  <% } %>
+                  <% if(value.teacher) { %>
+                    <br>
+                    <span><%= lessons[0] && lessons[0].group && lessons[0].groups.join(' ') %></span>
+                  <% } %>
                 </td>
               <% } else { %>
                 <% weekTypes.forEach((weekType) => { %>
@@ -88,7 +99,13 @@
                     <i><%= (lesson && lesson.lessonType && lesson.lessonType.title) ? `(${lesson.lessonType.title})` : '' %></i>
                     <span><%= lesson ? lesson.title : '' %></span>
                     <i><%= (lesson && lesson.classroom) ? lesson.classroom.number : '' %></i>
-                    <i><%= (lesson && lesson.teacher) ? lesson.teacher.fullName : '' %></i>
+                    <% if(value.group) { %>
+                      <i><%= (lesson && lesson.teacher) ? lesson.teacher.fullName : '' %></i>
+                    <% } %>
+                    <% if(value.teacher) { %>
+                      <br>
+                      <span><%= lesson && lesson.group && lesson.groups.join(' ') %></span>
+                    <% } %>
                   </td>
                 <% }); %>
               <% } %>

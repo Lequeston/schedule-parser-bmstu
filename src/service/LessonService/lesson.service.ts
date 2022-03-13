@@ -9,11 +9,13 @@ import teacherService from "../TeacherService";
 import timeService from "../TimeService";
 import weekDayService from "../WeekDayService";
 import weekTypeService from "../WeekTypeService";
-import _, { times } from 'lodash';
+import _ from 'lodash';
 import Weekday from "../../models/weekday.model";
 import Time from "../../models/time.model";
 import Group from "../../models/group.model";
-import { GroupByGroupData } from "../../types/groupsBy";
+import { GroupByGroupData, GroupByTeacherData } from "../../types/groupsBy";
+import logger from "../../config/logger";
+import WeekType from "../../models/weekType.model";
 
 export class LessonService {
 
@@ -98,47 +100,107 @@ export class LessonService {
       .getMany();
   }
 
-  private parseToObjectScheduleGroup(lessons: Lesson[], weekdays: Weekday[], times: Time[]): GroupByGroupData[] {
+  async getLessonsTeacher(teacher: string): Promise<Lesson[]> {
+    return await getConnection()
+      .createQueryBuilder()
+      .select('lesson')
+      .from(Lesson, 'lesson')
+      .leftJoinAndSelect('lesson.classroom', 'classroom')
+      .leftJoinAndSelect('lesson.group', 'group')
+      .leftJoinAndSelect('lesson.time', 'time')
+      .leftJoinAndSelect('lesson.weekType', 'weekType')
+      .leftJoinAndSelect('lesson.weekday', 'weekday')
+      .leftJoinAndSelect('lesson.teacher', 'teacher')
+      .leftJoinAndSelect('lesson.lessonType', 'lessonType')
+      .where(`regexp_replace("teacher"."fullName", '\W+', '', 'g') ~* regexp_replace('${teacher}', '\W+', '', 'g')`)
+      .getMany();
+  }
+
+  private groupByDays(lessons: Lesson[], weekdays: Weekday[], times: Time[], weekTypes: WeekType[]) {
+    return weekdays
+      .map(weekDay => ({
+        weekDay,
+        times: this.groupByTimes(
+          lessons.filter(lesson => lesson.weekday.id === weekDay.id),
+          times,
+          weekTypes
+        )
+      }))
+  }
+
+  private groupByTimes(lessonsValue: Lesson[], times: Time[], weekTypes: WeekType[]) {
+    return times
+      .map(time => {
+        const startArr = time.start.split(':');
+        const endArr = time.end.split(':');
+        const lessonsArray = lessonsValue.filter(lesson => lesson.time.id === time.id);
+        const lessons = _(weekTypes)
+          .map(weekType => {
+            const groups = lessonsArray.filter(lesson => lesson.weekType.id === weekType.id);
+            return groups.length !== 0 ? ({
+              ...groups[0],
+              groups: groups.map(group => group.group.title)
+            }) : undefined;
+          })
+          .compact()
+          .sort((a, b) => b.weekType.title.localeCompare(a.weekType.title))
+          .value();
+        return ({
+          time: `${startArr[0]}:${startArr[1]} - ${endArr[0]}:${endArr[1]}`,
+          lessons
+        })
+      })
+  }
+
+  private parseToObjectScheduleGroup(lessons: Lesson[], weekdays: Weekday[], times: Time[], weekTypes: WeekType[]): GroupByGroupData[] {
     const groups: string[] = Array.from(
       lessons.reduce((acc, lesson) => {
         return acc.add(lesson.group.title);
       }, new Set<string>())
     );
-    const groupByTimes = (lessons: Lesson[]) => {
-      return times
-        .map(time => {
-          const startArr = time.start.split(':');
-          const endArr = time.end.split(':');
-          return ({
-            time: `${startArr[0]}:${startArr[1]} - ${endArr[0]}:${endArr[1]}`,
-            lessons: lessons
-              .filter(lesson => lesson.time.id === time.id)
-              .sort((a, b) => b.weekType.title.localeCompare(a.weekType.title))
-          })
-        })
-    }
-    const groupByDays = (lessons: Lesson[]) => {
-      return weekdays
-        .map(weekDay => ({
-          weekDay,
-          times: groupByTimes(
-            lessons.filter(lesson => lesson.weekday.id === weekDay.id)
-          )
-        }))
-    }
     const groupByGroup = groups.map(group => ({
       group,
-      days: groupByDays(
-        lessons.filter(lesson => lesson.group.title === group)
+      days: this.groupByDays(
+        lessons.filter(lesson => lesson.group.title === group),
+        weekdays,
+        times,
+        weekTypes
       )
     }));
     return groupByGroup;
+  }
+
+  private parseToObjectScheduleTeacher(lessons: Lesson[], weekdays: Weekday[], times: Time[], weekTypes: WeekType[]): GroupByTeacherData[] {
+    const teachers: string[] = Array.from(
+      lessons.reduce((acc, lesson) => {
+        return acc.add(lesson.teacher.fullName);
+      }, new Set<string>())
+    );
+    const groupByTeacher = teachers.map(teacher => ({
+      teacher,
+      days: this.groupByDays(
+        lessons.filter(lesson => lesson.teacher.fullName === teacher),
+        weekdays,
+        times,
+        weekTypes
+      )
+    }));
+    return groupByTeacher;
   }
 
   async getScheduleGroup(groupTitle: string): Promise<GroupByGroupData[]> {
     const lessons = await this.getLessonsGroup(groupTitle);
     const weekDays = await weekDayService.getAllValues();
     const times = await timeService.getAllValues();
-    return this.parseToObjectScheduleGroup(lessons, weekDays, times);
+    const weekTypes = await weekTypeService.getAllValues();
+    return this.parseToObjectScheduleGroup(lessons, weekDays, times, weekTypes);
+  }
+
+  async getScheduleTeacher(teacher: string): Promise<GroupByTeacherData[]> {
+    const lessons = await this.getLessonsTeacher(teacher);
+    const weekDays = await weekDayService.getAllValues();
+    const times = await timeService.getAllValues();
+    const weekTypes = await weekTypeService.getAllValues();
+    return this.parseToObjectScheduleTeacher(lessons, weekDays, times, weekTypes);
   }
 }
