@@ -13,3 +13,14 @@ export type GroupByGroupData = {
       }[];
   }[];
 }
+
+export type GroupByTeacherData = {
+  teacher: string;
+  days: {
+      weekDay: Weekday;
+      times: {
+          time: string;
+          lessons: Lesson[];
+      }[];
+  }[];
+}
