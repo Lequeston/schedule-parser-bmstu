@@ -9,6 +9,7 @@ import weekTypeService from "../../service/WeekTypeService";
 import { ChatController } from "../ChatController/chat.controller";
 import path from 'path';
 import fs from 'fs';
+import groupService from "../../service/GroupService";
 
 type MatchedContext<
   C extends Context,
@@ -60,6 +61,34 @@ export class ScheduleController extends ChatController {
         await super.send(ctx, 'Выберете преподавателя из списка:', markup);
       } else {
         super.send(ctx, 'Данные введены некорректно');
+      }
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  async group(ctx: MatchedContext<Context<Update>, "text">) {
+    try {
+      const args = super.parseArgs(ctx.message.text);
+      const groupSearch = args[0] && args[0].toUpperCase();
+      if (!groupSearch) {
+        super.send(ctx, 'Вы не указали группу');
+        return;
+      }
+      const group = await groupService.find(groupSearch);
+      if (group) {
+        super.send(ctx, 'Генерируем для вас расписание');
+        const data = await lessonService.getScheduleGroup(group.title);
+        const weekTypes = await weekTypeService.getAllValues();
+        const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
+
+        const image = await nodeHtmlToImage({
+          html: html
+        }) as Buffer;
+
+        await ctx.replyWithPhoto({ source: image }, { caption: group.title });
+      } else {
+        await ctx.reply('Группа не найдена');
       }
     } catch(e) {
       console.error(e);
