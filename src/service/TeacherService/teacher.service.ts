@@ -29,6 +29,12 @@ export class TeacherService {
       .getMany();
   }
 
+  async getTeacherId(id: number) {
+    return await getConnection()
+      .getRepository(Teacher)
+      .findOne(id);
+  }
+
   async getTeachers(teacher: string): Promise<Teacher[]> {
     logger.info(getConnection()
       .getRepository(Teacher)

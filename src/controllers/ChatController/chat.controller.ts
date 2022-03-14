@@ -2,7 +2,7 @@ import { Context } from "telegraf";
 import { Update } from "telegraf/typings/core/types/typegram";
 
 export class ChatController {
-  private async send(ctx: Context<Update>, text: string, extra: any) {
+  protected async send(ctx: Context<Update>, text: string, extra?: any) {
     try {
       if (ctx.updateType === 'message') {
         await ctx.reply(text, extra);
@@ -13,5 +13,12 @@ export class ChatController {
     } catch(err) {
       console.error(err);
     }
+  }
+
+  protected parseArgs(commandStr: string): Array<string> {
+    return commandStr
+      .split(' ')
+      .filter(value => value)
+      .slice(1);
   }
 }

@@ -10,6 +10,7 @@ import { appStatus } from './statusApp';
 import lessonService from '../service/LessonService';
 import weekTypeService from '../service/WeekTypeService';
 import teacherService from '../service/TeacherService';
+import scheduleController from '../controllers/ScheduleController';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
@@ -69,34 +70,8 @@ bot.command('schedule', async ctx => {
   }
 });
 
-bot.command('teacher', async ctx => {
-  const wordArray = ctx
-    .message
-    .text
-    .split(' ');
-
-  const teacherWord = wordArray && wordArray.slice(1).join(' ');
-  const filename = path.resolve(__dirname, '..', 'views', 'schedule.ejs');
-  const teachers = await teacherService.getTeachers(teacherWord);
-  logger.info(ctx.from.username, teacherWord);
-  if (teachers.length > 1) {
-    ctx.reply(`Есть несколько преподавателей с такой фамилией: \n ${teachers.map(teacher => teacher.fullName).join('\n')}`);
-  } else if (teachers.length === 1) {
-    const teacher = teachers[0];
-    const data = await lessonService.getScheduleTeacher(teacher.fullName);
-    const weekTypes = await weekTypeService.getAllValues();
-    const template = fs.readFileSync(filename);
-    const html = await ejs.render(template.toString(), { values: data, weekTypes });
-
-    const image = await nodeHtmlToImage({
-      html: html
-    }) as Buffer;
-
-    await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
-  } else {
-    await ctx.reply('Преподаватель введен некорректно');
-  }
-});
+bot.command('teacher', scheduleController.teacher);
+bot.action(/^teacher(?:::(\d+))$/, scheduleController.teacherSchedule);
 
 process.once('SIGINT', () => bot.stop('SIGINT'))
 process.once('SIGTERM', () => bot.stop('SIGTERM'))
