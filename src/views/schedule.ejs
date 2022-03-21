@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      border: 1px solid grey;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    th, td {
+      border: 1px solid grey;
+      width: 40%;
+      text-align: center;
+      padding: 5px 10px;
+    }
+
+    .table {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .day {
+      width: 5%;
+    }
+
+    .time {
+      width: 15%;
+      text-align: center;
+    }
+
+    footer {
+      padding: 5px 10px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="container">
+    <% values.forEach((value) => { %>
+      <% if(value.group) { %>
+        <h2><%= value.group %></h2>
+      <% } %>
+      <% if(value.teacher) { %>
+        <h2><%= value.teacher %></h2>
+      <% } %>
+      <% value.days.forEach((day) => { %>
+        <table class="table">
+          <tr>
+            <th rowspan="9" class="day"><%= day.weekDay.title %></th>
+            <th class="time">Время</th>
+            <% weekTypes.forEach((type) => { %>
+              <th><%= type.title %></th>
+            <% }); %>
+          </tr>
+          <% day.times.forEach(({ time, lessons }) => { %>
+            <tr>
+              <td class="time" ><%= time %></td>
+              <% if (lessons.length > 1 && lessons[0].title === lessons[1].title) { %>
+                <td colspan="2">
+                  <i><%= (lessons[0].lessonType && lessons[0].lessonType.title) ? `(${lessons[0].lessonType.title})` : '' %></i>
+                  <span><%= lessons[0].title %></span>
+                  <i><%= lessons[0].classroom && lessons[0].classroom.number %></i>
+                  <% if(value.group) { %>
+                    <i><%= lessons[0].teacher && lessons[0].teacher.fullName %></i>
+                  <% } %>
+                  <% if(value.teacher) { %>
+                    <br>
+                    <span><%= lessons[0] && lessons[0].group && lessons[0].groups.join(' ') %></span>
+                  <% } %>
+                </td>
+              <% } else { %>
+                <% weekTypes.forEach((weekType) => { %>
+                  <% const lesson = lessons.find(lesson => weekType.id === lesson.weekType.id) %>
+                  <td>
+                    <i><%= (lesson && lesson.lessonType && lesson.lessonType.title) ? `(${lesson.lessonType.title})` : '' %></i>
+                    <span><%= lesson ? lesson.title : '' %></span>
+                    <i><%= (lesson && lesson.classroom) ? lesson.classroom.number : '' %></i>
+                    <% if(value.group) { %>
+                      <i><%= (lesson && lesson.teacher) ? lesson.teacher.fullName : '' %></i>
+                    <% } %>
+                    <% if(value.teacher) { %>
+                      <br>
+                      <span><%= lesson && lesson.group && lesson.groups.join(' ') %></span>
+                    <% } %>
+                  </td>
+                <% }); %>
+              <% } %>
+            </tr>
+          <% }); %>
+        </table>
+      <% }) %>
+    <% }) %>
+  </section>
+  <footer>
+    <i>&copy; generated @bmstu_chat_bot</i>
+  </footer>
+</body>
+</html>

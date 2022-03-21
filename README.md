@@ -8,15 +8,33 @@
 ### Запуск и настройка
 
 - Скачиваем все зависимости
-  
+
   ```bash
   yarn
   ```
 
-- Запуск приложения
+- Запускаем СУБД
+
+  ```bash
+  docker-compose up -d
+  ```
+
+- Запуск приложения (для демонстрации)
 
   ```bash
   yarn start
+  ```
+
+- Сборка приложение в папку `dist`
+
+  ```bash
+  yarn build
+  ```
+
+- Запуск dev сервера
+
+  ```bash
+  yarn dev
   ```
 
 ### Конфигурация `.env`
@@ -24,8 +42,17 @@
 ```bash
 # Токен от бота для telegram
 BOT_TOKEN=
-# URL доступа к бд
-DB_URL=
+
+# Параметры доступа к бд (указаны тестовые данные)
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=qwerty123
+DB_DATABASE=schedule-bmstu
+
 # URL от сайта с расписанием
 SITE_URL=https://lks.bmstu.ru/schedule/list
+
+# Начать парсинг данных при запуске приложения? (true, false)
+IS_PARSING=true
 ```

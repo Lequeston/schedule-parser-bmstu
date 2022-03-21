@@ -1,26 +1,40 @@
 {
   "name": "bmstu",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "dev": "nodemon --config config/nodemon.json --exec npm run start",
+    "build": "gulp -f ./config/gulpfile.js",
+    "start": "npm run build && node dist/index.js",
+    "test": "jest --config=config/jest.config.js"
   },
   "dependencies": {
     "async": "^3.2.3",
     "axios": "^0.26.0",
     "cheerio": "^1.0.0-rc.10",
+    "cron": "^1.8.2",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.6",
-    "html-to-image": "^1.9.0",
+    "lodash": "^4.17.21",
     "log4js": "^6.4.1",
-    "mongoose": "^6.2.3",
     "node-html-to-image": "^3.2.4",
-    "telegraf": "^4.7.0"
+    "pg": "^8.7.3",
+    "reflect-metadata": "^0.1.13",
+    "telegraf": "^4.7.0",
+    "typeorm": "^0.2.45"
   },
   "devDependencies": {
+    "@types/async": "^3.2.12",
+    "@types/cron": "^1.7.3",
+    "@types/ejs": "^3.1.0",
+    "@types/lodash": "^4.14.179",
     "cross-env": "^7.0.3",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "jest": "^27.5.1",
     "nodemon": "^2.0.15",
-    "rimraf": "^3.0.2"
+    "typescript": "^4.6.2"
   }
 }
