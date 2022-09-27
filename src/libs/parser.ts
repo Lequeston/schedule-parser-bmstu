@@ -5,6 +5,7 @@ import async from 'async';
 import { ParserData, ParserLesson } from '../types/parser';
 import appStatusService from './statusApp';
 import logger from '../config/logger';
+import parsingLogService from '../service/ParsingLogService';
 
 const parse = async (
   saveData: (data: ParserData) => void,
@@ -24,7 +25,6 @@ const parse = async (
 
     //формирует итоговый распарсенный объект
     const mergingData = (): ParserData => {
-      logger.info(Array.from(lessonTypes));
       return ({
         data,
         times: Array.from(times),
@@ -47,11 +47,6 @@ const parse = async (
         const parseLesson = (elem: cheerio.Cheerio<cheerio.Element>) => {
           const list = $(elem).find('i');
           const title = $(elem).find('span').text();
-          if (/[0-9]/.test(list.eq(0).text())) {
-            logger.info('Плохой вариант: ', list.eq(0).text(), ' - ', list.length);
-          } else {
-            logger.info('Удачный вариант: ', list.eq(0).text(), ' - ', list.length);
-          }
           if (!title) {
             return null;
           }
@@ -138,6 +133,7 @@ const parse = async (
           const title = $(elem).text().trim();
           if (!whiteListGroups || whiteListGroups.includes(title)) {
             const url = new URL($(elem).attr('href') || '', siteUrl);
+            logger.info(`Группа ${title} встала в очередь для парсинга url группы ${url.href}`);
             q.push(url.href);
           }
         });
@@ -153,6 +149,7 @@ const parse = async (
       appStatusService.emit('end_parsing');
       const data = mergingData();
       await saveData(data);
+      await parsingLogService.saveDateStamp();
       console.log('ready');
     });
     console.log('parse start');

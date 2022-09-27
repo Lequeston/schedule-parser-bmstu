@@ -14,6 +14,7 @@ import Time from "../models/time.model";
 import User from "../models/user.model";
 import Weekday from "../models/weekday.model";
 import WeekType from "../models/weekType.model";
+import ParsingLog from '../models/parsingLog.model';
 
 import lessonService from "../service/LessonService";
 import { ParserData } from "../types/parser";
@@ -30,7 +31,7 @@ export const connection = connectionManager.create({
   database: process.env.DB_DATABASE,
   synchronize: true,
   entities: [
-    Classroom, Department, Faculty, Group, Lesson, LessonType, Teacher, Time, User, Weekday, WeekType
+    Classroom, Department, Faculty, Group, Lesson, LessonType, Teacher, Time, User, Weekday, WeekType, ParsingLog
   ],
   logging: false
 });
