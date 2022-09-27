@@ -5,6 +5,7 @@ import async from 'async';
 import { ParserData, ParserLesson } from '../types/parser';
 import appStatusService from './statusApp';
 import logger from '../config/logger';
+import parsingLogService from '../service/ParsingLogService';
 
 const parse = async (
   saveData: (data: ParserData) => void,
@@ -37,6 +38,7 @@ const parse = async (
     }
 
     const parserSchedule = async (url: string, callback: Function) => {
+      logger.info(url);
       const res = await axios.get(url);
 
       if (res.status === 200) {
@@ -44,12 +46,34 @@ const parse = async (
 
         const parseLesson = (elem: cheerio.Cheerio<cheerio.Element>) => {
           const list = $(elem).find('i');
-          return $(elem).find('span').text() ? ({
-            title: $(elem).find('span').text(),
-            typeLesson: list.eq(0).text(),
-            office: list.eq(1).text(),
-            teacher: list.eq(2).text()
-          }) : null;
+          const title = $(elem).find('span').text();
+          if (!title) {
+            return null;
+          }
+          if (list.length === 3) {
+            return ({
+              title: $(elem).find('span').text(),
+              typeLesson: list.eq(0).text(),
+              office: list.eq(1).text(),
+              teacher: list.eq(2).text()
+            })
+          }
+          if (list.length === 0) {
+            return ({
+              title: $(elem).find('span').text(),
+              typeLesson: null,
+              office: null,
+              teacher: null,
+            })
+          }
+          if (list.length === 2) {
+            return ({
+              title: $(elem).find('span').text(),
+              typeLesson: null,
+              office: list.eq(0).text(),
+              teacher: list.eq(1).text()
+            })
+          }
         }
 
         const parserDay = (groupTitle: string, dayTitle: string) => {
@@ -104,10 +128,12 @@ const parse = async (
           $('div.container div.row div.col-md-6.hidden-xs table.table-responsive').each(parseTable(groupTitle));
         }
 
-        $('div.panel-body div.btn-group>a').each((i, elem) => {
+        const mainUniversity = $('div.list-group').eq(0);
+        $(mainUniversity).find('div.panel-body div.btn-group>a').each((i, elem) => {
           const title = $(elem).text().trim();
           if (!whiteListGroups || whiteListGroups.includes(title)) {
             const url = new URL($(elem).attr('href') || '', siteUrl);
+            logger.info(`Группа ${title} встала в очередь для парсинга url группы ${url.href}`);
             q.push(url.href);
           }
         });
@@ -123,6 +149,8 @@ const parse = async (
       appStatusService.emit('end_parsing');
       const data = mergingData();
       await saveData(data);
+      await parsingLogService.saveDateStamp();
+      console.log('ready');
     });
     console.log('parse start');
     appStatusService.emit('start_parsing');
