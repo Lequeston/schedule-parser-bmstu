@@ -1,6 +1,7 @@
 {
-  "name": "bmstu",
+  "name": "schedule-parser-bmstu",
   "version": "1.0.0",
+  "author": "Logachev Kirill <KALogachev@yandex.ru>",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --config config/nodemon.json --exec npm run start",
