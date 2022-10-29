@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import nodeHtmlToImage from "node-html-to-image";
 import { Context, Markup, NarrowedContext } from "telegraf";
-import { Update } from "telegraf/typings/core/types/typegram";
+import { Message, Update } from "telegraf/typings/core/types/typegram";
 import { MessageSubType, MountMap, UpdateType } from "telegraf/typings/telegram-types";
 import lessonService from "../../service/LessonService";
 import teacherService from "../../service/TeacherService";
@@ -10,6 +10,8 @@ import { ChatController } from "../ChatController/chat.controller";
 import path from 'path';
 import fs from 'fs';
 import groupService from "../../service/GroupService";
+import { cacheClient } from "../../libs/cashe";
+import logger from "../../config/logger";
 
 type MatchedContext<
   C extends Context,
@@ -35,14 +37,27 @@ export class ScheduleController extends ChatController {
     if (teacher) {
       super.send(ctx, 'Генерируем для вас расписание');
       const data = await lessonService.getScheduleTeacher(teacher.fullName);
-      const weekTypes = await weekTypeService.getAllValues();
-      const html = await ejs.render(scheduleTeacher.toString(), { values: data, weekTypes });
 
-      const image = await nodeHtmlToImage({
-        html: html
-      }) as Buffer;
+      const teacherID = await cacheClient.get(teacher.id.toString());
+      if (teacherID) {
+        logger.info(`${teacher.fullName}: взят из кэша`);
+        await ctx.replyWithPhoto(teacherID, { caption: teacher.fullName });
+      } else {
+        const weekTypes = await weekTypeService.getAllValues();
+        const html = await ejs.render(scheduleTeacher.toString(), { values: data, weekTypes });
 
-      await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
+        const image = await nodeHtmlToImage({
+          html: html
+        }) as Buffer;
+
+        const message = await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
+
+        if (message.photo.length > 0) {
+          logger.info(`${teacher.fullName} добавлен в кэш`);
+          // число не подходит приходится к строке преобразовать подумать как красиво решить
+          await cacheClient.set(teacher.id.toString(), message.photo[0].file_id);
+        }
+      }
     } else {
       super.send(ctx, 'Произошла непредвиденная ошибка');
     }
@@ -79,14 +94,30 @@ export class ScheduleController extends ChatController {
       if (group) {
         super.send(ctx, 'Генерируем для вас расписание');
         const data = await lessonService.getScheduleGroup(group.title);
-        const weekTypes = await weekTypeService.getAllValues();
-        const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
 
-        const image = await nodeHtmlToImage({
-          html: html
-        }) as Buffer;
+        // Берем из кэша
+        const imageID = await cacheClient.get(group.id.toString());
+        if (imageID) {
+          logger.info(`${group.title}: взят из кэша`);
+          await ctx.replyWithPhoto(imageID, { caption: group.title });
+        } else {
 
-        await ctx.replyWithPhoto({ source: image }, { caption: group.title });
+          const weekTypes = await weekTypeService.getAllValues();
+          const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
+
+          const image = await nodeHtmlToImage({
+            html: html
+          }) as Buffer;
+
+          const message: Message.PhotoMessage = await ctx.replyWithPhoto({ source: image }, { caption: group.title });
+
+          // TODO: переделать эту вермешельку
+          if (message.photo.length > 0) {
+            logger.info(`${group.title} добавлен в кэш`);
+            // число не подходит приходится к строке преобразовать подумать как красиво решить
+            await cacheClient.set(group.id.toString(), message.photo[0].file_id);
+          }
+        }
       } else {
         await ctx.reply('Группа не найдена');
       }
