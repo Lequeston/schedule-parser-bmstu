@@ -37,6 +37,21 @@ const parse = async (
       });
     }
 
+    const getParingStatistic = (parserData: ParserData) => {
+      const statistic = {
+        numberGroups: parserData.groups.length,
+        numberTeachers: parserData.teachers.length,
+        numberLessons: parserData.data.length
+      };
+
+      logger.info(`
+        Статистика после парсинга:
+          - Кол-во групп: ${statistic.numberGroups}
+          - Кол-во преподавателей: ${statistic.numberTeachers}
+          - Кол-во уроков: ${statistic.numberLessons}
+      `);
+    }
+
     const parserSchedule = async (url: string, callback: Function) => {
       logger.info(url);
       const res = await axios.get(url);
@@ -150,6 +165,7 @@ const parse = async (
       const data = mergingData();
       await saveData(data);
       await parsingLogService.saveDateStamp();
+      getParingStatistic(data);
       console.log('ready');
     });
     console.log('parse start');
