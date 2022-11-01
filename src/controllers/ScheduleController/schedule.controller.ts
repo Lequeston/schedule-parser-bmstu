@@ -47,7 +47,10 @@ export class ScheduleController extends ChatController {
         const html = await ejs.render(scheduleTeacher.toString(), { values: data, weekTypes });
 
         const image = await nodeHtmlToImage({
-          html: html
+          html: html,
+          puppeteerArgs: await {
+            args: ['--no-sandbox'],
+          }
         }) as Buffer;
 
         const message = await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
@@ -106,7 +109,10 @@ export class ScheduleController extends ChatController {
           const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
 
           const image = await nodeHtmlToImage({
-            html: html
+            html: html,
+            puppeteerArgs: await {
+              args: ['--no-sandbox'],
+            }
           }) as Buffer;
 
           const message: Message.PhotoMessage = await ctx.replyWithPhoto({ source: image }, { caption: group.title });
