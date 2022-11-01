@@ -19,6 +19,7 @@ import ParsingLog from '../models/parsingLog.model';
 import lessonService from "../service/LessonService";
 import { ParserData } from "../types/parser";
 import logger from "../config/logger";
+import { cacheClient } from "./cashe";
 
 const connectionManager = getConnectionManager();
 export const connection = connectionManager.create({
@@ -43,6 +44,7 @@ export const dbDisconnect = async () => {
 export const saveParseData = async (data: ParserData) => {
   try {
     appStatusService.emit('start_saving_data');
+    await cacheClient.flushDb();
     lessonService.save(data);
   } catch(e) {
     logger.info(e);

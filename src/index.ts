@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { CronJob } from 'cron';
 
 import { connection, saveParseData } from './libs/db';
+import { cacheClient } from './libs/cashe';
 import parse from './libs/parser';
 import logger from './config/logger';
 import { appStatus } from './libs/statusApp';
@@ -27,6 +28,7 @@ const parseJob = new CronJob('00 00 3 * * 0', () => {
 const start = async () => {
   try {
     await connection.connect();
+    await cacheClient.connect();
     await startParsing();
     parseJob.start();
     await bot.launch();
