@@ -38,7 +38,7 @@ export class ScheduleController extends ChatController {
       super.send(ctx, 'Генерируем для вас расписание');
       const data = await lessonService.getScheduleTeacher(teacher.fullName);
 
-      const teacherID = await cacheClient.get(teacher.id.toString());
+      const teacherID = await cacheClient.get(`teacher:${teacher.id.toString()}`);
       if (teacherID) {
         logger.info(`${teacher.fullName}: взят из кэша`);
         await ctx.replyWithPhoto(teacherID, { caption: teacher.fullName });
@@ -58,7 +58,7 @@ export class ScheduleController extends ChatController {
         if (message.photo.length > 0) {
           logger.info(`${teacher.fullName} добавлен в кэш`);
           // число не подходит приходится к строке преобразовать подумать как красиво решить
-          await cacheClient.set(teacher.id.toString(), message.photo[0].file_id);
+          await cacheClient.set(`teacher:${teacher.id.toString()}`, message.photo[0].file_id);
         }
       }
     } else {
@@ -99,7 +99,7 @@ export class ScheduleController extends ChatController {
         const data = await lessonService.getScheduleGroup(group.title);
 
         // Берем из кэша
-        const imageID = await cacheClient.get(group.id.toString());
+        const imageID = await cacheClient.get(`group:${group.id.toString()}`);
         if (imageID) {
           logger.info(`${group.title}: взят из кэша`);
           await ctx.replyWithPhoto(imageID, { caption: group.title });
@@ -121,7 +121,7 @@ export class ScheduleController extends ChatController {
           if (message.photo.length > 0) {
             logger.info(`${group.title} добавлен в кэш`);
             // число не подходит приходится к строке преобразовать подумать как красиво решить
-            await cacheClient.set(group.id.toString(), message.photo[0].file_id);
+            await cacheClient.set(`group:${group.id.toString()}`, message.photo[0].file_id);
           }
         }
       } else {

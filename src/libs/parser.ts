@@ -140,11 +140,11 @@ const parse = async (
         const groupTitle = $('div.col-md-8 div.page-header>h1') && $('div.col-md-8 div.page-header>h1').text().replace(/\s+/g, ' ').trim().split(' ')[1];
 
         if (groupTitle) {
-          $('div.container div.row div.col-md-6.hidden-xs table.table-responsive').each(parseTable(groupTitle));
+          $('div.container-md div.row div.col-lg-6 table.table-responsive').each(parseTable(groupTitle));
         }
 
         const mainUniversity = $('div.list-group').eq(0);
-        $(mainUniversity).find('div.panel-body div.btn-group>a').each((i, elem) => {
+        $(mainUniversity).find('div.panel-body div.row a.btn-primary').each((i, elem) => {
           const title = $(elem).text().trim();
           if (!whiteListGroups || whiteListGroups.includes(title)) {
             const url = new URL($(elem).attr('href') || '', siteUrl);
