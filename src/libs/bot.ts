@@ -16,20 +16,33 @@ bot.use((ctx, next) => {
 bot.start((ctx) => {
   ctx.reply(`
 Добро пожаловать, ${ctx.from.first_name}!
-Данный бот парсит расписание с сайта ${process.env.SITE_URL} и может формирует для вас расписание.
-Вы можете получать расписание преподавателей и расписание групп.
+Данный бот парсит расписание с сайта ${process.env.SITE_URL}.
+Через данный бот вы можете получать расписание преподавателей и расписание групп.
 Получить весь список команд можно по команде /help.
 
 Команды:
 /group <Наименование группы> - получить расписание групп. Пример: /group ИУ6-63Б
 /teacher <Фамилия преподавателя> - получить расписание преподавателя. Пример: /teacher Захаров
+
+Сообщить о баге можно тут:
+https://github.com/Lequeston/schedule-parser-bmstu/issues
+
+Предложить идею или просто высказаться тут:
+https://github.com/Lequeston/schedule-parser-bmstu/discussions
   `);
 });
 
 bot.help((ctx) => {
   ctx.reply(`
+Команды:
 /group <Наименование группы> - получить расписание групп. Пример: /group ИУ6-63Б
 /teacher <Фамилия преподавателя> - получить расписание преподавателя. Пример: /teacher Захаров
+
+Сообщить о баге можно тут:
+https://github.com/Lequeston/schedule-parser-bmstu/issues
+
+Предложить идею или просто высказаться тут:
+https://github.com/Lequeston/schedule-parser-bmstu/discussions
   `)
 })
 
