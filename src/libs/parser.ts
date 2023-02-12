@@ -9,7 +9,7 @@ import parsingLogService from '../service/ParsingLogService';
 
 const parse = async (
   saveData: (data: ParserData) => void,
-  whiteListGroups?: Array<string>
+  whiteListGroups?: Array<string>,
 ) => {
   try {
     const siteUrl: string = process.env.SITE_URL || '';
@@ -53,7 +53,6 @@ const parse = async (
     }
 
     const parserSchedule = async (url: string, callback: Function) => {
-      logger.info(url);
       const res = await axios.get(url);
 
       if (res.status === 200) {
@@ -122,8 +121,8 @@ const parse = async (
                 saveLesson(time, element, 'ЗН');
                 saveLesson(time, element, 'ЧС');
               } else {
-                const success = $(elem).find('td.text-success');
-                const info = $(elem).find('td.text-info');
+                const success = $(elem).find('td.text-info-bold');
+                const info = $(elem).find('td.text-primary');
                 saveLesson(time, success, 'ЧС');
                 saveLesson(time, info, 'ЗН');
               }
