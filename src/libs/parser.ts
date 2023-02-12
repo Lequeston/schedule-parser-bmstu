@@ -69,7 +69,7 @@ const parse = async (
               title: $(elem).find('span').text(),
               typeLesson: list.eq(0).text(),
               office: list.eq(1).text(),
-              teacher: list.eq(2).text()
+              teachers: list.eq(2).text().split(','),
             })
           }
           if (list.length === 0) {
@@ -77,7 +77,7 @@ const parse = async (
               title: $(elem).find('span').text(),
               typeLesson: null,
               office: null,
-              teacher: null,
+              teachers: null,
             })
           }
           if (list.length === 2) {
@@ -85,7 +85,7 @@ const parse = async (
               title: $(elem).find('span').text(),
               typeLesson: null,
               office: list.eq(0).text(),
-              teacher: list.eq(1).text()
+              teachers: list.eq(1).text().split(','),
             })
           }
         }
@@ -102,15 +102,35 @@ const parse = async (
             if (lesson) {
               lesson.typeLesson && lessonTypes.add(lesson.typeLesson);
               lesson.office && offices.add(lesson.office);
-              lesson.teacher && teachers.add(lesson.teacher);
+              lesson.teachers && lesson.teachers.forEach(teacher => teacher.trim() && teachers.add(teacher.trim()));
 
-              data.push({
-                ...lesson,
-                time,
-                groupTitle,
-                dayTitle,
-                weekType
-              });
+              let formatLesson = {
+                title: lesson.title,
+                typeLesson: lesson.typeLesson,
+                office: lesson.office,
+              };
+              if (lesson.teachers) {
+                lesson.teachers.forEach((teacher) => {
+                  data.push({
+                    ...formatLesson,
+                    teacher: teacher || null,
+                    time,
+                    groupTitle,
+                    dayTitle,
+                    weekType,
+                  });
+                })
+              }
+              if (!lesson.teachers) {
+                data.push({
+                  ...formatLesson,
+                  teacher: null,
+                  time,
+                  groupTitle,
+                  dayTitle,
+                  weekType,
+                })
+              }
             }
           }
           return (i: number, elem: cheerio.Element) => {

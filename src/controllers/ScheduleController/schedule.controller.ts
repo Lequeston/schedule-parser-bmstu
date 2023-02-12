@@ -107,7 +107,6 @@ export class ScheduleController extends ChatController {
       if (group) {
         super.send(ctx, 'Генерируем для вас расписание');
         const data = await lessonService.getScheduleGroup(group.title);
-
         // Берем из кэша
         const imageID = await cacheClient.get(`group:${group.id.toString()}`);
         if (imageID) {
@@ -117,7 +116,6 @@ export class ScheduleController extends ChatController {
 
           const weekTypes = await weekTypeService.getAllValues();
           const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
-          logger.info(html);
           const image = await htmlToImage(html);
 
           const message: Message.PhotoMessage = await ctx.replyWithPhoto({ source: image }, { caption: group.title });
