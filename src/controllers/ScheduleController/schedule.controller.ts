@@ -24,6 +24,22 @@ const filenameTeacher = path.resolve(rootPath, 'views', 'schedule.ejs');
 const filenameGroup = path.resolve(rootPath, 'views', 'schedule.ejs');
 const scheduleTeacher = fs.readFileSync(filenameTeacher);
 const scheduleGroup = fs.readFileSync(filenameGroup);
+
+const htmlToImage = async (html: string): Promise<Buffer> => {
+  return await nodeHtmlToImage({
+    html: html,
+    puppeteerArgs: await {
+      args: ['--no-sandbox'],
+      defaultViewport: {
+        width: 2000,
+        height: 3200,
+      }
+    },
+    type: "jpeg",
+    quality: 100,
+  }) as Buffer;
+};
+
 export class ScheduleController extends ChatController {
   constructor() {
     super();
@@ -46,13 +62,7 @@ export class ScheduleController extends ChatController {
         const weekTypes = await weekTypeService.getAllValues();
         const html = await ejs.render(scheduleTeacher.toString(), { values: data, weekTypes });
 
-        const image = await nodeHtmlToImage({
-          html: html,
-          puppeteerArgs: await {
-            args: ['--no-sandbox'],
-          }
-        }) as Buffer;
-
+        const image = await htmlToImage(html);
         const message = await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
 
         if (message.photo.length > 0) {
@@ -107,13 +117,8 @@ export class ScheduleController extends ChatController {
 
           const weekTypes = await weekTypeService.getAllValues();
           const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
-
-          const image = await nodeHtmlToImage({
-            html: html,
-            puppeteerArgs: await {
-              args: ['--no-sandbox'],
-            }
-          }) as Buffer;
+          logger.info(html);
+          const image = await htmlToImage(html);
 
           const message: Message.PhotoMessage = await ctx.replyWithPhoto({ source: image }, { caption: group.title });
 
