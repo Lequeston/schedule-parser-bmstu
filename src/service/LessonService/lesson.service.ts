@@ -1,4 +1,4 @@
-import { createQueryBuilder, getConnection, getRepository, InsertResult } from "typeorm";
+import { getConnection } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import Lesson from "../../models/lesson.model";
 import { ParserData, ParserLesson } from "../../types/parser";
@@ -12,9 +12,7 @@ import weekTypeService from "../WeekTypeService";
 import _ from 'lodash';
 import Weekday from "../../models/weekday.model";
 import Time from "../../models/time.model";
-import Group from "../../models/group.model";
 import { GroupByGroupData, GroupByTeacherData } from "../../types/groupsBy";
-import logger from "../../config/logger";
 import WeekType from "../../models/weekType.model";
 
 export class LessonService {
@@ -139,7 +137,8 @@ export class LessonService {
             const groups = lessonsArray.filter(lesson => lesson.weekType.id === weekType.id);
             return groups.length !== 0 ? ({
               ...groups[0],
-              groups: groups.map(group => group.group.title)
+              groups: groups.map(group => group.group.title),
+              teachers: groups.filter(lesson => lesson.teacher).map(lesson => lesson.teacher.fullName),
             }) : undefined;
           })
           .compact()

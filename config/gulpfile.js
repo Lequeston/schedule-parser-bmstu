@@ -5,7 +5,6 @@ const path = require('path');
 
 const rootDir = path.resolve(__dirname, '..');
 const distPath = path.resolve(rootDir, 'dist');
-const logPath = path.resolve(rootDir, 'logs');
 
 const tsProject = ts.createProject(path.resolve(rootDir, 'tsconfig.json'));
 
@@ -18,7 +17,7 @@ gulp.task('typescript', () => {
 });
 
 gulp.task('build-clean', () => {
-  return del([distPath, logPath], { force: true });
+  return del([distPath], { force: true });
 });
 
 gulp.task('views', () => {

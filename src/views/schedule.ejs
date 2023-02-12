@@ -129,7 +129,7 @@
                     <span><%= lessons[0].title %></span>
                     <i><%= lessons[0].classroom && lessons[0].classroom.number %></i>
                     <% if(value.group) { %>
-                      <i><%= lessons[0].teacher && lessons[0].teacher.fullName %></i>
+                      <i><%= lessons[0].teacher && lessons[0].teachers.join(', ') %></i>
                     <% } %>
                     <% if(value.teacher) { %>
                       <br>
@@ -146,7 +146,7 @@
                         <span><%= lesson ? lesson.title : '' %></span>
                         <i><%= (lesson && lesson.classroom) ? lesson.classroom.number : '' %></i>
                         <% if(value.group) { %>
-                          <i><%= (lesson && lesson.teacher) ? lesson.teacher.fullName : '' %></i>
+                          <i><%= (lesson && lesson.teacher) ? lesson.teachers.join(', ') : '' %></i>
                         <% } %>
                         <% if(value.teacher) { %>
                           <br>
@@ -161,7 +161,7 @@
                         <span><%= lesson ? lesson.title : '' %></span>
                         <i><%= (lesson && lesson.classroom) ? lesson.classroom.number : '' %></i>
                         <% if(value.group) { %>
-                          <i><%= (lesson && lesson.teacher) ? lesson.teacher.fullName : '' %></i>
+                          <i><%= (lesson && lesson.teacher) ? lesson.teachers.join(', ') : '' %></i>
                         <% } %>
                         <% if(value.teacher) { %>
                           <br>

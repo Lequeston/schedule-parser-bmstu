@@ -56,7 +56,7 @@ export class ScheduleController extends ChatController {
 
       const teacherID = await cacheClient.get(`teacher:${teacher.id.toString()}`);
       if (teacherID) {
-        logger.info(`${teacher.fullName}: взят из кэша`);
+        logger.info(`${teacher.fullName}: взят из кэша: ${ctx.from?.username}`);
         await ctx.replyWithPhoto(teacherID, { caption: teacher.fullName });
       } else {
         const weekTypes = await weekTypeService.getAllValues();
@@ -66,7 +66,7 @@ export class ScheduleController extends ChatController {
         const message = await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
 
         if (message.photo.length > 0) {
-          logger.info(`${teacher.fullName} добавлен в кэш`);
+          logger.info(`${teacher.fullName} добавлен в кэш: ${ctx.from?.username}`);
           // число не подходит приходится к строке преобразовать подумать как красиво решить
           await cacheClient.set(`teacher:${teacher.id.toString()}`, message.photo[0].file_id);
         }
@@ -107,24 +107,22 @@ export class ScheduleController extends ChatController {
       if (group) {
         super.send(ctx, 'Генерируем для вас расписание');
         const data = await lessonService.getScheduleGroup(group.title);
-
         // Берем из кэша
         const imageID = await cacheClient.get(`group:${group.id.toString()}`);
         if (imageID) {
-          logger.info(`${group.title}: взят из кэша`);
+          logger.info(`${group.title}: взят из кэша: ${ctx.from?.username}`);
           await ctx.replyWithPhoto(imageID, { caption: group.title });
         } else {
 
           const weekTypes = await weekTypeService.getAllValues();
           const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
-          logger.info(html);
           const image = await htmlToImage(html);
 
           const message: Message.PhotoMessage = await ctx.replyWithPhoto({ source: image }, { caption: group.title });
 
           // TODO: переделать эту вермешельку
           if (message.photo.length > 0) {
-            logger.info(`${group.title} добавлен в кэш`);
+            logger.info(`${group.title} добавлен в кэш: ${ctx.from?.username}`);
             // число не подходит приходится к строке преобразовать подумать как красиво решить
             await cacheClient.set(`group:${group.id.toString()}`, message.photo[0].file_id);
           }
