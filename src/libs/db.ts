@@ -18,7 +18,7 @@ import ParsingLog from '../models/parsingLog.model';
 
 import lessonService from "../service/LessonService";
 import { ParserData } from "../types/parser";
-import logger from "../config/logger";
+import { logger } from "../config/logger";
 import { cacheClient } from "./cashe";
 
 const connectionManager = getConnectionManager();

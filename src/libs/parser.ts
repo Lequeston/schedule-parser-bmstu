@@ -4,7 +4,7 @@ import async from 'async';
 
 import { ParserData, ParserLesson } from '../types/parser';
 import appStatusService from './statusApp';
-import logger from '../config/logger';
+import { logger } from '../config/logger';
 import parsingLogService from '../service/ParsingLogService';
 
 const parse = async (

@@ -1,5 +1,5 @@
 import { getConnection, InsertResult } from "typeorm";
-import logger from "../../config/logger";
+import { logger } from "../../config/logger";
 import Teacher from "../../models/teacher.model";
 
 export class TeacherService {

@@ -8,16 +8,23 @@ log4js.configure({
     debug: {
       type: 'file',
       filename: path.resolve(rootPath, 'debug.log')
+    },
+    chat: {
+      type: 'file',
+      filename: path.resolve(rootPath, 'chat.log')
     }
   },
   categories: {
     default: {
       appenders: ['debug'],
       level: 'info'
+    },
+    chat: {
+      appenders: ['chat'],
+      level: 'info'
     }
   }
 });
 
-const logger = log4js.getLogger();
-
-export default logger;
+export const logger = log4js.getLogger();
+export const chatLogger = log4js.getLogger('chat');

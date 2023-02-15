@@ -11,7 +11,7 @@ import path from 'path';
 import fs from 'fs';
 import groupService from "../../service/GroupService";
 import { cacheClient } from "../../libs/cashe";
-import logger from "../../config/logger";
+import { logger } from "../../config/logger";
 
 type MatchedContext<
   C extends Context,

@@ -2,10 +2,12 @@ import { Telegraf } from 'telegraf';
 
 import { appStatus } from './statusApp';
 import scheduleController from '../controllers/ScheduleController';
+import { chatLogger } from '../config/logger';
 
 const bot = new Telegraf(process.env.BOT_TOKEN || '');
 
 bot.use((ctx, next) => {
+  chatLogger.info(ctx.message);
   if (appStatus === 'SAVING_DATA') {
     ctx.reply('Сейчас сервис не доступен');
   } else {

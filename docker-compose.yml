@@ -30,7 +30,7 @@ services:
       retries: 5
 
   bot:
-    container_name: schedule-parser-bmstu
+    container_name: lequeston/bmstu-schedule:0.0.1
     build:
       context: .
       dockerfile: Dockerfile

@@ -5,7 +5,7 @@ import { CronJob } from 'cron';
 import { connection, saveParseData } from './libs/db';
 import { cacheClient } from './libs/cashe';
 import parse from './libs/parser';
-import logger from './config/logger';
+import { logger } from './config/logger';
 import { appStatus } from './libs/statusApp';
 import bot from './libs/bot';
 
