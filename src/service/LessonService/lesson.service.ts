@@ -94,7 +94,7 @@ export class LessonService {
       .leftJoinAndSelect('lesson.weekday', 'weekday')
       .leftJoinAndSelect('lesson.teacher', 'teacher')
       .leftJoinAndSelect('lesson.lessonType', 'lessonType')
-      .where('group.title = :title', {title: groupTitle})
+      .where('group.title = :title', {title: this.normalization(groupTitle)})
       .getMany();
   }
 
@@ -115,6 +115,10 @@ export class LessonService {
   }
 
   private groupByDays(lessons: Lesson[], weekdays: Weekday[], times: Time[], weekTypes: WeekType[]) {
+    //console.log('---', JSON.stringify(weekdays, null, 2));
+    //console.log('----', JSON.stringify(times, null, 2));
+    //console.log('-----', JSON.stringify(weekTypes, null, 2));
+    //console.log('------', JSON.stringify(lessons, null, 2));
     return weekdays
       .map(weekDay => ({
         weekDay,
@@ -127,10 +131,12 @@ export class LessonService {
   }
 
   private groupByTimes(lessonsValue: Lesson[], times: Time[], weekTypes: WeekType[]) {
+    //console.log('---', JSON.stringify(times, null, 2));
     return times
       .map(time => {
         const startArr = time.start.split(':');
         const endArr = time.end.split(':');
+        console.log(JSON.stringify(lessonsValue, null, 2));
         const lessonsArray = lessonsValue.filter(lesson => lesson.time.id === time.id);
         const lessons = _(weekTypes)
           .map(weekType => {
@@ -157,6 +163,7 @@ export class LessonService {
         return acc.add(lesson.group.title);
       }, new Set<string>())
     );
+    console.log('-', JSON.stringify(weekdays, null, 2));
     const groupByGroup = groups.map(group => ({
       group,
       days: this.groupByDays(
@@ -189,9 +196,13 @@ export class LessonService {
 
   async getScheduleGroup(groupTitle: string): Promise<GroupByGroupData[]> {
     const lessons = await this.getLessonsGroup(groupTitle);
+    console.log(JSON.stringify(lessons, null, 2));
     const weekDays = await weekDayService.getAllValues();
+    console.log(JSON.stringify(weekDays, null, 2));
     const times = await timeService.getAllValues();
+    // console.log(JSON.stringify(times, null, 2));
     const weekTypes = await weekTypeService.getAllValues();
+    // console.log(JSON.stringify(weekTypes, null, 2));
     return this.parseToObjectScheduleGroup(lessons, weekDays, times, weekTypes);
   }
 

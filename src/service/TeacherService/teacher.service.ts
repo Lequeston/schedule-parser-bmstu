@@ -39,12 +39,12 @@ export class TeacherService {
     logger.info(getConnection()
       .getRepository(Teacher)
       .createQueryBuilder('teacher')
-      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${teacher}', '\\W+', '', 'g')`)
+      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${this.normalization(teacher)}', '\\W+', '', 'g')`)
       .getQuery());
     return await getConnection()
       .getRepository(Teacher)
       .createQueryBuilder('teacher')
-      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${teacher}', '\\W+', '', 'g')`)
+      .where(`regexp_replace("teacher"."fullName", '\\W+', '', 'g') ~* regexp_replace('${this.normalization(teacher)}', '\\W+', '', 'g')`)
       .getMany();
   }
 

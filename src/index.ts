@@ -4,18 +4,19 @@ import { CronJob } from 'cron';
 
 import { connection, saveParseData } from './libs/db';
 import { cacheClient } from './libs/cashe';
-import parse from './libs/parser';
 import { logger } from './config/logger';
 import { appStatus } from './libs/statusApp';
 import bot from './libs/bot';
 
 import parsingLogService from './service/ParsingLogService';
+import { parse } from './libs/apiSchedule/apiSchedule';
 
 logger.info(process.pid);
 
 const startParsing = async () => {
   logger.info(appStatus);
   const isParsing = await parsingLogService.dataIsNotOutdated();
+  logger.info('isParsing', isParsing);
   if (appStatus === 'BOT_WORK' && isParsing) {
     logger.info('parsing');
     parse(saveParseData);

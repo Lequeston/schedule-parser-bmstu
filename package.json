@@ -7,7 +7,8 @@
     "dev": "nodemon --config config/nodemon.json --exec npm run start",
     "build": "gulp -f ./config/gulpfile.js",
     "start": "npm run build && node dist/index.js",
-    "test": "jest --config=config/jest.config.js"
+    "test": "jest --config=config/jest.config.js",
+    "prepare": "ts-patch install && typia patch"
   },
   "dependencies": {
     "async": "^3.2.3",
@@ -23,13 +24,15 @@
     "redis": "^4.3.1",
     "reflect-metadata": "^0.1.13",
     "telegraf": "^4.7.0",
-    "typeorm": "^0.2.45"
+    "typeorm": "^0.2.45",
+    "typia": "^6.11.0"
   },
   "devDependencies": {
     "@types/async": "^3.2.12",
     "@types/cron": "^1.7.3",
     "@types/ejs": "^3.1.0",
     "@types/lodash": "^4.14.179",
+    "@types/node": "^22.7.4",
     "cross-env": "^7.0.3",
     "del": "^6.0.0",
     "gulp": "^4.0.2",
@@ -37,6 +40,7 @@
     "gulp-typescript": "^6.0.0-alpha.1",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
-    "typescript": "^4.6.2"
+    "ts-patch": "^3.2.1",
+    "typescript": "^5.6.2"
   }
 }

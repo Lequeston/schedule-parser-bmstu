@@ -2,16 +2,10 @@ import { getConnection, InsertResult } from "typeorm";
 import LessonType from "../../models/lessonType.model";
 
 export class LessonTypeService {
-  private normalization(title: string) {
-    return title
-      .trim()
-      .replace(/[^А-Яа-яЁё]/g, '')
-      .toLowerCase();
-  }
 
   public findElem(value: string, array: Array<LessonType>): LessonType | undefined {
     const lessonType = array.find(lessonType => {
-      return this.normalization(value) === this.normalization(lessonType.title);
+      return value === lessonType.title;
     });
     return lessonType;
   }
@@ -33,9 +27,8 @@ export class LessonTypeService {
 
   async saveArray(lessonTypeArray: Array<string>): Promise<InsertResult> {
     const lessonTypes = lessonTypeArray.map(lessonType => {
-      const title = this.normalization(lessonType);
       return ({
-        title
+        title: lessonType
       });
     })
 

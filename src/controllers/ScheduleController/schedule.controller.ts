@@ -103,10 +103,13 @@ export class ScheduleController extends ChatController {
         super.send(ctx, 'Вы не указали группу');
         return;
       }
+      logger.info(`Пользователь ${ctx.from?.username} запросил расписание для группы ${groupSearch}`);
       const group = await groupService.find(groupSearch);
+      logger.info(`Пользователь ${ctx.from?.username} получил группу ${group}`);
       if (group) {
         super.send(ctx, 'Генерируем для вас расписание');
         const data = await lessonService.getScheduleGroup(group.title);
+        console.log(JSON.stringify(data, null, 2));
         // Берем из кэша
         const imageID = await cacheClient.get(`group:${group.id.toString()}`);
         if (imageID) {

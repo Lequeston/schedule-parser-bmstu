@@ -33,6 +33,9 @@ export class ParsingLogService {
     if (!lastDateParsing) {
       return true;
     }
+    console.log(dateStamp.getTime());
+    console.log(lastDateParsing.parsingTime.getTime());
+    console.log(this.timeObsolescence);
     return (dateStamp.getTime() - lastDateParsing.parsingTime.getTime()) >= this.timeObsolescence;
   }
 }

@@ -4,19 +4,26 @@
     "module": "commonjs",
     "rootDir": "./src",
     "outDir": "./dist",
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
-    "allowJs": true
+    "allowJs": true,
+    "plugins": [
+      {
+        "transform": "typia/lib/transform"
+      }
+    ],
+    "strictNullChecks": true
   },
   "exclude": [
     "node_modules",
     "dist",
     "config",
     "src/**/*.spec.ts",
-    "src/**/*.spec.js",
+    "src/**/*.spec.js"
   ],
   "include": [
     "src/**/*"

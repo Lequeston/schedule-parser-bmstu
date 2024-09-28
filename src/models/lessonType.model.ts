@@ -9,7 +9,7 @@ class LessonType {
 
   @Column({
     type: 'varchar',
-    length: 5,
+    length: 10,
     unique: true,
     nullable: false
   })
