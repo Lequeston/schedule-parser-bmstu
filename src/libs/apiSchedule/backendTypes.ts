@@ -144,7 +144,7 @@ export type SchedulesTypesApiResponse = {
          * @example lecture
          * @example seminar
          */
-        actType?: string;
+        actType?: 'seminar' | 'lecture' | 'lab';
         /**
          * Полное название дисциплины
          * @example Коммутация и маршрутизация трафика в распределённых системах

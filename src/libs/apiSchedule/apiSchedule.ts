@@ -18,7 +18,15 @@ const DAY_NUMBER_TO_TITLES = {
 const WEAK_TO_WEAK_TYPE = {
   'zn': 'ЗН',
   'ch': 'ЧС',
-}
+} as const;
+
+const LESSON_TYPE_TO_LESSON_TYPE = {
+  'seminar': 'Семинар',
+  'lecture': 'Лекция',
+  'lab': 'Лабораторная',
+} as const;
+
+
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -110,7 +118,7 @@ export const parse = async (
       });
 
       if (lesson.discipline.actType) {
-        lessonTypes.add(lesson.discipline.actType);
+        lessonTypes.add(LESSON_TYPE_TO_LESSON_TYPE[lesson.discipline.actType]);
       }
 
       lesson.groups.forEach((group) => {
@@ -126,7 +134,7 @@ export const parse = async (
           if (lesson.week !== 'all') {
             lessons.push({
               title: lesson.discipline.fullName,
-              typeLesson: lesson.discipline.actType || null,
+              typeLesson: lesson.discipline.actType ? LESSON_TYPE_TO_LESSON_TYPE[lesson.discipline.actType] : null,
               office: lesson.audiences[0] ? lesson.audiences[0].name : null,
               teacher: lesson.teachers[0] ? `${lesson.teachers[0].lastName} ${lesson.teachers[0].firstName} ${lesson.teachers[0].middleName}` : null,
               time: `${lesson.startTime}-${lesson.endTime}`,
@@ -137,7 +145,7 @@ export const parse = async (
           } else {
             lessons.push({
               title: lesson.discipline.fullName,
-              typeLesson: lesson.discipline.actType || null,
+              typeLesson: lesson.discipline.actType ? LESSON_TYPE_TO_LESSON_TYPE[lesson.discipline.actType] : null,
               office: lesson.audiences[0] ? lesson.audiences[0].name : null,
               teacher: lesson.teachers[0] ? `${lesson.teachers[0].lastName} ${lesson.teachers[0].firstName} ${lesson.teachers[0].middleName}` : null,
               time: `${lesson.startTime}-${lesson.endTime}`,
@@ -147,7 +155,7 @@ export const parse = async (
             });
             lessons.push({
               title: lesson.discipline.fullName,
-              typeLesson: lesson.discipline.actType || null,
+              typeLesson: lesson.discipline.actType ? LESSON_TYPE_TO_LESSON_TYPE[lesson.discipline.actType] : null,
               office: lesson.audiences[0] ? lesson.audiences[0].name : null,
               teacher: lesson.teachers[0] ? `${lesson.teachers[0].lastName} ${lesson.teachers[0].firstName} ${lesson.teachers[0].middleName}` : null,
               time: `${lesson.startTime}-${lesson.endTime}`,
