@@ -82,7 +82,6 @@ export const parse = async (
     });
 
     logger.info(groupsUrls);
-    getLessons(groupsUrls[100]);
     logger.info(groupsUrls.length);
   }
 
@@ -97,8 +96,6 @@ export const parse = async (
     }
 
     const data = assert<SchedulesTypesApiResponse>(response.data);
-
-    console.dir(data);
 
     // TODO: надо будет пересобрать тип времени
     data.data.schedule.forEach((lesson) => {

@@ -109,7 +109,6 @@ export class ScheduleController extends ChatController {
       if (group) {
         super.send(ctx, 'Генерируем для вас расписание');
         const data = await lessonService.getScheduleGroup(group.title);
-        console.log(JSON.stringify(data, null, 2));
         // Берем из кэша
         const imageID = await cacheClient.get(`group:${group.id.toString()}`);
         if (imageID) {

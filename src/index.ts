@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { CronJob } from 'cron';
+// import { CronJob } from 'cron';
 
 import { connection, saveParseData } from './libs/db';
 import { cacheClient } from './libs/cashe';
@@ -22,16 +22,16 @@ const startParsing = async () => {
     parse(saveParseData);
   }
 }
-const parseJob = new CronJob('00 00 3 * * 0', () => {
-  startParsing();
-}, null, true, 'Europe/Moscow');
+//const parseJob = new CronJob('00 00 3 * * 0', () => {
+//  startParsing();
+//}, null, true, 'Europe/Moscow');
 
 const start = async () => {
   try {
     await connection.connect();
     await cacheClient.connect();
     await startParsing();
-    parseJob.start();
+    // parseJob.start();
     await bot.launch();
   } catch(e) {
     logger.error(e);

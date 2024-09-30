@@ -29,18 +29,16 @@ services:
       timeout: 5s
       retries: 5
 
-#  bot:
-#    container_name: bmstu-schedule
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    links:
-#      - "db:database"
-#      - "cache:cache"
-#    depends_on:
-#      db:
-#        condition: service_healthy
-#      cache:
-#        condition: service_healthy
-#    env_file:
-#      - ./.env
+  bot:
+    image: schedule-parser-bmstu
+    restart: always
+    links:
+      - "db:database"
+      - "cache:cache"
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    env_file:
+      - ./.env
