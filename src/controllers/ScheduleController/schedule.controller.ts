@@ -18,7 +18,6 @@ type MatchedContext<
   T extends UpdateType | MessageSubType
 > = NarrowedContext<C, MountMap[T]>
 
-
 const rootPath = path.resolve(__dirname, '..', '..');
 const filenameTeacher = path.resolve(rootPath, 'views', 'schedule.ejs');
 const filenameGroup = path.resolve(rootPath, 'views', 'schedule.ejs');
@@ -28,12 +27,22 @@ const scheduleGroup = fs.readFileSync(filenameGroup);
 const htmlToImage = async (html: string): Promise<Buffer> => {
   return await nodeHtmlToImage({
     html: html,
-    puppeteerArgs: await {
-      args: ['--no-sandbox'],
+    puppeteerArgs: {
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process', // <- this one doesn't work in Windows
+        '--disable-gpu',
+      ],
       defaultViewport: {
         width: 2000,
         height: 3200,
-      }
+      },
+      headless: true,
     },
     type: "jpeg",
     quality: 100,
@@ -63,11 +72,11 @@ export class ScheduleController extends ChatController {
         const html = await ejs.render(scheduleTeacher.toString(), { values: data, weekTypes });
 
         const image = await htmlToImage(html);
+
         const message = await ctx.replyWithPhoto({ source: image }, { caption: teacher.fullName });
 
         if (message.photo.length > 0) {
           logger.info(`${teacher.fullName} добавлен в кэш: ${ctx.from?.username}`);
-          // число не подходит приходится к строке преобразовать подумать как красиво решить
           await cacheClient.set(`teacher:${teacher.id.toString()}`, message.photo[0].file_id);
         }
       }
@@ -109,23 +118,19 @@ export class ScheduleController extends ChatController {
       if (group) {
         super.send(ctx, 'Генерируем для вас расписание');
         const data = await lessonService.getScheduleGroup(group.title);
-        // Берем из кэша
         const imageID = await cacheClient.get(`group:${group.id.toString()}`);
         if (imageID) {
           logger.info(`${group.title}: взят из кэша: ${ctx.from?.username}`);
           await ctx.replyWithPhoto(imageID, { caption: group.title });
         } else {
-
           const weekTypes = await weekTypeService.getAllValues();
           const html = await ejs.render(scheduleGroup.toString(), { values: data, weekTypes });
           const image = await htmlToImage(html);
 
           const message: Message.PhotoMessage = await ctx.replyWithPhoto({ source: image }, { caption: group.title });
 
-          // TODO: переделать эту вермешельку
           if (message.photo.length > 0) {
             logger.info(`${group.title} добавлен в кэш: ${ctx.from?.username}`);
-            // число не подходит приходится к строке преобразовать подумать как красиво решить
             await cacheClient.set(`group:${group.id.toString()}`, message.photo[0].file_id);
           }
         }
